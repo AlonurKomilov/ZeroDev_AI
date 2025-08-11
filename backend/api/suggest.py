@@ -1,23 +1,21 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 from typing import Optional, List
-from openai import AsyncOpenAI
-import os
+
+# Import centralized services
+from backend.core.ai_router import get_llm_adapter
+from backend.core.cache import cache
+from backend.core.logger import get_logger
 
 router = APIRouter()
-
-# Load API key from .env
-api_key = os.getenv("OPENAI_API_KEY")
-if not api_key:
-    raise ValueError("❌ OPENAI_API_KEY is missing. Please check your .env file.")
-
-ai = AsyncOpenAI(api_key=api_key)
+log = get_logger(__name__)
 
 
 class SuggestPromptRequest(BaseModel):
     prompt: str
     role: Optional[str] = "guest"
     user_id: Optional[str] = "anonymous"
+    model_name: str = "gpt-4o"
 
 
 def get_confidence_score(original: str, suggestion: str) -> float:
@@ -29,29 +27,36 @@ def get_confidence_score(original: str, suggestion: str) -> float:
 
 
 @router.post("/suggest_prompt", tags=["AI Suggestions"])
+@cache(ttl=3600)  # Cache suggestions for 1 hour
 async def suggest_prompt_route(data: SuggestPromptRequest):
+    log.info(f"Generating suggestions for prompt using model {data.model_name}: {data.prompt[:50]}...")
+
+    adapter = get_llm_adapter(data.model_name)
+
     system_msg = (
         "You are a smart AI assistant. "
         "When given an unsafe or unethical software prompt, rewrite it into 3 safe, ethical, and developer-friendly alternatives. "
         "For each variant, include a one-line explanation of why it's safe and how it's better. "
         "Format: Each variant on a new line, followed by its explanation in parentheses."
     )
-
     user_msg = f"Rewrite this software prompt in 3 safe and ethical ways:\n{data.prompt}"
 
+    messages = [
+        {"role": "system", "content": system_msg},
+        {"role": "user", "content": user_msg}
+    ]
+
     try:
-        response = await ai.chat.completions.create(
-            model="gpt-4o",
-            messages=[
-                {"role": "system", "content": system_msg},
-                {"role": "user", "content": user_msg}
-            ],
+        response = await adapter.chat_completion(
+            messages=messages,
+            model=data.model_name,
             temperature=0.4
         )
     except Exception as e:
-        return {"error": f"OpenAI API Error: {str(e)}"}
+        log.error(f"LLM API Error during suggestion generation: {e}", exc_info=True)
+        return {"error": f"LLM API Error: {str(e)}"}
 
-    raw_output = response.choices[0].message.content.strip()
+    raw_output = response['choices'][0]['message']['content'].strip()
     lines = [line.strip("•- ").strip() for line in raw_output.split("\n") if line.strip()]
     top_3 = lines[:3] if len(lines) >= 3 else lines
 

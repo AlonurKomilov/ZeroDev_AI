@@ -26,3 +26,21 @@ def load_policy_config(role: Optional[str] = None) -> Dict:
             return role_policies[role]
 
     return config.get("default_policy", {})
+
+
+FILTER_RULES_PATH = Path(__file__).parent / "filter_rules.json"
+
+def load_filter_rules() -> Dict:
+    """
+    Load generic filter rules from filter_rules.json.
+    """
+    if not FILTER_RULES_PATH.exists():
+        print("[⚠️] filter_rules.json not found.")
+        return {"inbound_filters": [], "outbound_filters": []}
+
+    try:
+        with open(FILTER_RULES_PATH, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except json.JSONDecodeError:
+        print("[⚠️] Failed to parse filter_rules.json.")
+        return {"inbound_filters": [], "outbound_filters": []}

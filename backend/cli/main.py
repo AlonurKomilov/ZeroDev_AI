@@ -1,84 +1,102 @@
-"""ZeroDev AI CLI.
-Run:
-  - `python -m zerodev_ai.cli.main init <project_name>`
-  - `python -m zerodev_ai.cli.main generate <project_path>`
-  - `python -m zerodev_ai.cli.main ci_cd <project_path>`
-  - `python -m zerodev_ai.cli.main deploy <project_path>`
-  - `python -m zerodev_ai.cli.main rollback <file_path> <version>`
+"""
+ZeroDev AI CLI - Refactored with Click and Rich.
+
+This module provides a command-line interface for interacting with the ZeroDev backend services.
 """
 
-import argparse
-import asyncio
 from pathlib import Path
+import yaml
+import click
+from rich.console import Console
+
+# Import agents and other necessary components
 from backend.agents.scaffold_agent import scaffold_project
 from backend.agents.codegen_agent import generate_code_from_spec
 from backend.agents.ci_cd_agent import create_ci_cd_files
 from backend.agents.deploy_agent import deploy_project
 from backend.models.spec_model import ProjectSpec
 from backend.version_engine.rollback import rollback_version
-import yaml
+from backend.agents.manager import AgentManager
 
-def _build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="zerodev", description="ZeroDev AI CLI")
-    sub = parser.add_subparsers(dest="command", required=True)
+# Initialize Rich Console for beautiful output
+console = Console()
 
-    # init
-    p_init = sub.add_parser("init", help="Scaffold a new project directory")
-    p_init.add_argument("project_name", help="Name of the project to generate")
+@click.group()
+def cli():
+    """
+    ZeroDev AI CLI: A tool for bootstrapping and managing AI-powered software projects.
+    """
+    console.print("[bold cyan]ZeroDev AI CLI[/bold cyan] 🚀")
 
-    # generate
-    p_gen = sub.add_parser("generate", help="Generate code from spec in given project path")
-    p_gen.add_argument("project_path", help="Path to scaffolded project with config.yaml")
+@cli.command()
+@click.argument("project_name")
+def init(project_name: str):
+    """Scaffold a new project directory."""
+    console.print(f"Scaffolding new project: [bold magenta]{project_name}[/bold magenta]...")
+    scaffold_project(Path.cwd() / project_name)
+    console.print(f"✅ Project [bold green]{project_name}[/bold green] scaffolded successfully!")
 
-    # ci_cd
-    p_ci = sub.add_parser("ci_cd", help="Add CI/CD + test + Docker setup to project")
-    p_ci.add_argument("project_path", help="Path to the project")
+@cli.command()
+@click.argument("project_path", type=click.Path(exists=True, file_okay=False, resolve_path=True))
+async def generate(project_path: str):
+    """Generate code from a spec file in the given project path."""
+    agent_manager = AgentManager()
+    project_dir = Path(project_path)
+    config_path = project_dir / "config.yaml"
 
-    # deploy
-    p_deploy = sub.add_parser("deploy", help="Build + run Docker container for project")
-    p_deploy.add_argument("project_path", help="Path to the project")
-    p_deploy.add_argument("--port", type=int, default=8000, help="Host port to expose")
-    p_deploy.add_argument("--push", action="store_true", help="Push image to Docker registry")
-    p_deploy.add_argument("--no-health", action="store_true", help="Skip health check after deploy")
+    console.print(f"⚙️ Generating code for project in [bold magenta]{project_dir}[/bold magenta]...")
 
-    # rollback
-    p_rb = sub.add_parser("rollback", help="Rollback a file to a previous version")
-    p_rb.add_argument("file_path", help="Target file to rollback (e.g. agents/ci_cd_agent.py)")
-    p_rb.add_argument("version", help="Version to rollback to (e.g. v1.0.0)")
+    if not config_path.exists():
+        console.print(f"❌ [bold red]Error:[/bold red] `config.yaml` not found in {project_dir}")
+        return
 
-    return parser
-
-def main() -> None:
-    parser = _build_parser()
-    args = parser.parse_args()
-
-    if args.command == "init":
-        scaffold_project(Path.cwd() / args.project_name)
-
-    elif args.command == "generate":
-        project_dir = Path(args.project_path)
-        with open(project_dir / "config.yaml", "r", encoding="utf-8") as f:
+    try:
+        with open(config_path, "r", encoding="utf-8") as f:
             raw = yaml.safe_load(f)
         spec = ProjectSpec(**raw)
-        asyncio.run(generate_code_from_spec(spec, project_dir))
 
-    elif args.command == "ci_cd":
-        create_ci_cd_files(
-            project_path=args.project_path,
-            project_name=Path(args.project_path).name
-        )
+        # Use the agent manager to execute the agent with resilience
+        await agent_manager.execute_agent(generate_code_from_spec, spec, project_dir)
 
-    elif args.command == "deploy":
-        deploy_project(
-            project_path=args.project_path,
-            project_name=Path(args.project_path).name,
-            port=args.port,
-            push_to_registry=args.push,
-            health_check=not args.no_health
-        )
+        console.print("✅ Code generation complete.")
+    except Exception as e:
+        console.print(f"❌ [bold red]An unexpected error occurred:[/bold red] {e}")
 
-    elif args.command == "rollback":
-        rollback_version(args.file_path, args.version)
+@cli.command("ci-cd")
+@click.argument("project_path", type=click.Path(exists=True, file_okay=False, resolve_path=True))
+def ci_cd(project_path: str):
+    """Add CI/CD, testing, and Docker setup to a project."""
+    project_dir = Path(project_path)
+    console.print(f"🚀 Setting up CI/CD for [bold magenta]{project_dir.name}[/bold magenta]...")
+    create_ci_cd_files(project_path=str(project_dir), project_name=project_dir.name)
+    console.print("✅ CI/CD setup complete.")
+
+@cli.command()
+@click.argument("project_path", type=click.Path(exists=True, file_okay=False, resolve_path=True))
+@click.option("--port", default=8000, help="Host port to expose.")
+@click.option("--push", is_flag=True, help="Push image to Docker registry.")
+@click.option("--no-health", is_flag=True, help="Skip health check after deploy.")
+def deploy(project_path: str, port: int, push: bool, no_health: bool):
+    """Build and run the Docker container for a project."""
+    project_dir = Path(project_path)
+    console.print(f"🚢 Deploying project [bold magenta]{project_dir.name}[/bold magenta]...")
+    deploy_project(
+        project_path=str(project_dir),
+        project_name=project_dir.name,
+        port=port,
+        push_to_registry=push,
+        health_check=not no_health
+    )
+    console.print("✅ Deployment complete.")
+
+@cli.command()
+@click.argument("file_path")
+@click.argument("version")
+def rollback(file_path: str, version: str):
+    """Rollback a file to a previous version."""
+    console.print(f"⏪ Rolling back [bold magenta]{file_path}[/bold magenta] to version [bold yellow]{version}[/bold yellow]...")
+    rollback_version(file_path, version)
+    console.print("✅ Rollback complete.")
 
 if __name__ == "__main__":
-    main()
+    cli()

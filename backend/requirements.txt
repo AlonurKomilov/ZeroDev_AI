@@ -1,9 +1,16 @@
-fastapi
-uvicorn
-pydantic
-httpx
 aiofiles
-pyyaml
-pytest
-rich         # optional CLI beautification
+celery
+click
+fastapi
+httpx
 openai>=1.0.0
+pydantic
+pydantic-settings
+python-json-logger
+pytest
+pyyaml
+redis
+rich         # optional CLI beautification
+starlette-exporter
+tenacity
+uvicorn
