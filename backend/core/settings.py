@@ -1,36 +1,60 @@
+import os
 from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Optional
+from backend.core.secrets_manager import get_secrets_manager
 
 class Settings(BaseSettings):
     """
     Centralized application settings.
-    Settings are loaded from environment variables and/or a .env file.
+    Settings are loaded from environment variables, a .env file, or a secrets manager.
     """
-    model_config = SettingsConfigDict(env_file='.env', env_file_encoding='utf-8', extra='ignore')
+    TESTING: bool = False
+
+    model_config = SettingsConfigDict(
+        env_file=os.environ.get("ENV_FILE", ".env"),
+        env_file_encoding='utf-8',
+        extra='ignore'
+    )
 
     # Core settings
     APP_NAME: str = "ZeroDev Backend"
     DEBUG: bool = False
 
     # Database settings
-    DATABASE_URL: str = "sqlite:///./zerodev.db"
+    DATABASE_URL: str
 
     # Redis settings
-    REDIS_HOST: str = "localhost"
-    REDIS_PORT: int = 6379
-    REDIS_DB: int = 0
+    REDIS_HOST: str
+    REDIS_PORT: int
+    REDIS_DB: int
 
     # Celery settings - allow them to be None initially
     CELERY_BROKER_URL: Optional[str] = None
     CELERY_RESULT_BACKEND: Optional[str] = None
 
     # OpenAI API Key
-    OPENAI_API_KEY: str = "your_openai_api_key_here"
+    OPENAI_API_KEY: str
 
     # Security settings
-    JWT_SECRET: str = "df8f9b5a5d5e0a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b"
-    ENCRYPTION_KEY: str = "ext2W8I1aOcyHHYyuGZFBiuzLeBnv5EBWB7pFU6tdQg="
+    JWT_SECRET: str
+    ENCRYPTION_KEY: str
+    OWNER_EMERGENCY_KEY: str
+
+    def __init__(self, **values):
+        super().__init__(**values)
+        if not self.TESTING:
+            # In a production environment, you would fetch secrets from the secrets manager.
+            # For this simulation, we will fetch them on initialization.
+            secrets_manager = get_secrets_manager()
+            self.DATABASE_URL = secrets_manager.get_secret("DATABASE_URL")
+            self.REDIS_HOST = secrets_manager.get_secret("REDIS_HOST")
+            self.REDIS_PORT = int(secrets_manager.get_secret("REDIS_PORT"))
+            self.REDIS_DB = int(secrets_manager.get_secret("REDIS_DB"))
+            self.OPENAI_API_KEY = secrets_manager.get_secret("OPENAI_API_KEY")
+            self.JWT_SECRET = secrets_manager.get_secret("JWT_SECRET")
+            self.ENCRYPTION_KEY = secrets_manager.get_secret("ENCRYPTION_KEY")
+            self.OWNER_EMERGENCY_KEY = secrets_manager.get_secret("OWNER_EMERGENCY_KEY")
 
     @property
     def REDIS_URL(self) -> str:

@@ -15,7 +15,7 @@ from backend.core.celery_app import celery_app
 from backend.tasks.parsing import parse_prompt_task
 
 # ✅ Import API routers from the new `api` directory
-from backend.api import analyze, suggest, feedback, admin_feedback, auth, projects, keys, templates, export, modify_api, review_api
+from backend.api import analyze, suggest, feedback, admin_feedback, auth, projects, keys, templates, export, modify_api, review_api, emergency, dashboard, migration
 
 # ✅ Import Prometheus monitoring components
 from starlette_exporter import PrometheusMiddleware, handle_metrics
@@ -25,12 +25,18 @@ from prometheus_client import Counter
 # This should be one of the first things to run
 log = get_logger(__name__)
 
+# ✅ Import middleware
+from backend.core.middleware import GlobalStatusMiddleware
+
 # ✅ Create FastAPI app
 app = FastAPI(
     title="ZeroDev Backend API",
     version="2.0.0",
     description="The core API for the ZeroDev platform, built for stability and performance."
 )
+
+# ✅ Add global status middleware
+app.add_middleware(GlobalStatusMiddleware)
 
 # ✅ Add Prometheus middleware
 app.add_middleware(PrometheusMiddleware)
@@ -105,6 +111,9 @@ app.include_router(feedback.router, prefix="/feedback", tags=["User Feedback"])
 app.include_router(admin_feedback.router, prefix="/admin", tags=["Admin"])
 app.include_router(modify_api.router, prefix="/api/modify", tags=["Modification"])
 app.include_router(review_api.router, prefix="/api/review", tags=["Review"])
+app.include_router(emergency.router, prefix="/api/emergency", tags=["Emergency"])
+app.include_router(dashboard.router, prefix="/api/dashboard", tags=["Dashboard"])
+app.include_router(migration.router, prefix="/api/migration", tags=["Migration"])
 
 @app.get("/", tags=["Health"])
 def read_root():
