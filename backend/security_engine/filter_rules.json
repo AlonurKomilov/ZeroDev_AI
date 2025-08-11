@@ -1,0 +1,30 @@
+{
+  "inbound_filters": [
+    {
+      "name": "Block Executable Uploads",
+      "action": "block",
+      "criteria": {
+        "file_extension": ["exe", "dll", "so", "dmg"]
+      },
+      "risk_score": 10
+    },
+    {
+      "name": "Flag Suspicious Keywords",
+      "action": "flag",
+      "criteria": {
+        "body_contains": ["malware", "keylogger", "trojan"]
+      },
+      "risk_score": 8
+    }
+  ],
+  "outbound_filters": [
+    {
+      "name": "Prevent Leaking API Keys",
+      "action": "redact",
+      "criteria": {
+        "body_matches_pattern": ["(sk|pk)_[a-zA-Z0-9]{20,50}"]
+      },
+      "risk_score": 9
+    }
+  ]
+}

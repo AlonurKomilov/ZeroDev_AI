@@ -3,22 +3,23 @@ import time
 from typing import Optional
 
 from fastapi import APIRouter
-from openai import OpenAIError
 from pydantic import BaseModel
 
-from security_engine.audit_log import log_violation
-from security_engine.filters import analyze_prompt
-
-# Use the shared OpenAI client
-from .shared import client
+# Use the new centralized services
+from backend.core.ai_router import get_llm_adapter
+from backend.core.logger import get_logger
+from backend.security_engine.audit_log import log_violation
+from backend.security_engine.filters import analyze_prompt
 
 router = APIRouter()
+log = get_logger(__name__)
 
 
 class AnalyzePromptRequest(BaseModel):
     prompt: str
     role: Optional[str] = "guest"
     user_id: Optional[str] = "anonymous"
+    model_name: str = "gpt-4o-mini"
 
 
 # Dummy helper: tag classifier (can be replaced by AI model later)
@@ -35,11 +36,9 @@ def classify_prompt_type(prompt: str) -> str:
     return "general"
 
 
-async def get_ai_suggestions(prompt: str, violation: dict) -> list[str]:
+async def get_ai_suggestions(prompt: str, violation: dict, model_name: str) -> list[str]:
     """Generates helpful suggestions for a flagged prompt using an AI model."""
-    if not client:
-        return []
-
+    adapter = get_llm_adapter(model_name)
     keyword = violation.get("word") or violation.get("pattern", "")
     message = violation.get("message", "")
 
@@ -57,18 +56,18 @@ async def get_ai_suggestions(prompt: str, violation: dict) -> list[str]:
             "Please provide 2-3 safe, alternative suggestions."
         )
 
-        completion = await client.chat.completions.create(
-            model="gpt-4o-mini",
+        completion = await adapter.chat_completion(
+            model=model_name,
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},
             ],
             response_format={"type": "json_object"},
         )
-        response_data = json.loads(completion.choices[0].message.content)
+        response_data = json.loads(completion['choices'][0]['message']['content'])
         return response_data.get("suggestions", [])
-    except (OpenAIError, json.JSONDecodeError) as e:
-        print(f"[⚠️] Could not generate AI suggestions: {e}")
+    except Exception as e:
+        log.error(f"Could not generate AI suggestions: {e}", exc_info=True)
         return []
 
 
@@ -86,9 +85,10 @@ async def analyze_prompt_route(data: AnalyzePromptRequest):
 
     result = analyze_prompt(data.prompt, role=data.role)
 
-    # Add AI-generated suggestions to each violation
-    for v in result["violations"]:
-        v["suggestions"] = await get_ai_suggestions(data.prompt, v)
+    # Add AI-generated suggestions to each violation, if any violations occurred
+    if result.get("violations"):
+        for v in result["violations"]:
+            v["suggestions"] = await get_ai_suggestions(data.prompt, v, data.model_name)
 
     # Optional logging if not safe
     if result["status"] != "safe":
