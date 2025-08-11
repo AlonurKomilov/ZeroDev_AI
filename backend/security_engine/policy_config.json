@@ -1,0 +1,36 @@
+{
+  "default_policy": {
+    "blocked_keywords": [
+      {"word": "phishing", "score": 10},
+      {"word": "ddos", "score": 9},
+      {"word": "credit card", "score": 8}
+    ],
+    "risky_keywords": [
+      {"word": "admin panel", "score": 6},
+      {"word": "fake user", "score": 5}
+    ],
+    "blocked_patterns": [
+      {"pattern": "\\b\\d{16}\\b", "score": 9},
+      {"pattern": "(?i)password\\s*=\\s*['\\\"].+['\\\"]", "score": 7}
+    ]
+  },
+
+  "role_policies": {
+    "guest": {
+      "blocked_keywords": [
+        {"word": "phishing", "score": 10},
+        {"word": "ddos", "score": 9},
+        {"word": "steal", "score": 8}
+      ],
+      "risky_keywords": [
+        {"word": "admin panel", "score": 5}
+      ],
+      "blocked_patterns": []
+    },
+    "admin": {
+      "blocked_keywords": [],
+      "risky_keywords": [],
+      "blocked_patterns": []
+    }
+  }
+}
