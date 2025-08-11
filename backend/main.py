@@ -15,7 +15,7 @@ from backend.core.celery_app import celery_app
 from backend.tasks.parsing import parse_prompt_task
 
 # ✅ Import API routers from the new `api` directory
-from backend.api import analyze, suggest, feedback, admin_feedback, auth, projects, keys, templates, export
+from backend.api import analyze, suggest, feedback, admin_feedback, auth, projects, keys, templates, export, modify_api, review_api
 
 # ✅ Import Prometheus monitoring components
 from starlette_exporter import PrometheusMiddleware, handle_metrics
@@ -103,6 +103,8 @@ app.include_router(analyze.router, prefix="/prompt", tags=["Prompt Analysis"])
 app.include_router(suggest.router, prefix="/prompt", tags=["Prompt Analysis"])
 app.include_router(feedback.router, prefix="/feedback", tags=["User Feedback"])
 app.include_router(admin_feedback.router, prefix="/admin", tags=["Admin"])
+app.include_router(modify_api.router, prefix="/api/modify", tags=["Modification"])
+app.include_router(review_api.router, prefix="/api/review", tags=["Review"])
 
 @app.get("/", tags=["Health"])
 def read_root():

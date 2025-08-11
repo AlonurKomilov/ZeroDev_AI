@@ -3,7 +3,12 @@ from backend.core.settings import settings
 
 # Define the include list for tasks
 # This tells Celery where to find task modules.
-include_tasks = ["backend.tasks.parsing", "backend.tasks.project_tasks"]
+include_tasks = [
+    "backend.tasks.parsing",
+    "backend.tasks.project_tasks",
+    "backend.tasks.modification_tasks",
+    "backend.tasks.periodic_tasks"
+]
 
 celery_app = Celery(
     "worker",  # The name of the celery app
@@ -14,11 +19,18 @@ celery_app = Celery(
 
 celery_app.conf.update(
     task_track_started=True,
-    # It's good practice to have task-specific settings here
-    # rather than in the main settings file if they are celery-specific.
     task_serializer='json',
     result_serializer='json',
     accept_content=['json'],
     timezone='UTC',
     enable_utc=True,
 )
+
+# Celery Beat Schedule
+# This configures the scheduler to run tasks at specified intervals.
+celery_app.conf.beat_schedule = {
+    'feedback-analysis-every-hour': {
+        'task': 'backend.tasks.periodic_tasks.run_feedback_analysis',
+        'schedule': 3600.0,  # Run every hour
+    },
+}
