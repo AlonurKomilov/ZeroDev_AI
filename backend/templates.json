@@ -1,0 +1,14 @@
+[
+    {
+        "id": "fastapi-starter",
+        "name": "FastAPI Starter",
+        "description": "A basic FastAPI project with a single endpoint.",
+        "tags": ["python", "fastapi", "backend"]
+    },
+    {
+        "id": "react--pwa",
+        "name": "React PWA",
+        "description": "A simple Progressive Web App using React.",
+        "tags": ["javascript", "react", "frontend", "pwa"]
+    }
+]

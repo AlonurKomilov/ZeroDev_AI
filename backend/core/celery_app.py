@@ -3,7 +3,7 @@ from backend.core.settings import settings
 
 # Define the include list for tasks
 # This tells Celery where to find task modules.
-include_tasks = ["backend.tasks.parsing"]
+include_tasks = ["backend.tasks.parsing", "backend.tasks.project_tasks"]
 
 celery_app = Celery(
     "worker",  # The name of the celery app

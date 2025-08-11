@@ -1,9 +1,14 @@
 aiofiles
+alembic
 celery
 click
 fastapi
+fastapi-users
+fastapi-users-db-sqlmodel
 httpx
 openai>=1.0.0
+passlib[bcrypt]
+psycopg2-binary
 pydantic
 pydantic-settings
 python-json-logger
@@ -11,6 +16,7 @@ pytest
 pyyaml
 redis
 rich         # optional CLI beautification
+sqlmodel
 starlette-exporter
 tenacity
 uvicorn
