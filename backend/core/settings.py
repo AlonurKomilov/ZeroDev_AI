@@ -13,6 +13,9 @@ class Settings(BaseSettings):
     APP_NAME: str = "ZeroDev Backend"
     DEBUG: bool = False
 
+    # Database settings
+    DATABASE_URL: str = "sqlite:///./zerodev.db"
+
     # Redis settings
     REDIS_HOST: str = "localhost"
     REDIS_PORT: int = 6379
@@ -24,6 +27,10 @@ class Settings(BaseSettings):
 
     # OpenAI API Key
     OPENAI_API_KEY: str = "your_openai_api_key_here"
+
+    # Security settings
+    JWT_SECRET: str = "df8f9b5a5d5e0a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b"
+    ENCRYPTION_KEY: str = "ext2W8I1aOcyHHYyuGZFBiuzLeBnv5EBWB7pFU6tdQg="
 
     @property
     def REDIS_URL(self) -> str:

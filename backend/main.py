@@ -15,7 +15,7 @@ from backend.core.celery_app import celery_app
 from backend.tasks.parsing import parse_prompt_task
 
 # ✅ Import API routers from the new `api` directory
-from backend.api import analyze, suggest, feedback, admin_feedback
+from backend.api import analyze, suggest, feedback, admin_feedback, auth, projects, keys, templates, export
 
 # ✅ Import Prometheus monitoring components
 from starlette_exporter import PrometheusMiddleware, handle_metrics
@@ -94,6 +94,11 @@ async def get_task_status(task_id: str):
 
 # ✅ Mount all API routers
 log.info("Mounting API routers.")
+app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
+app.include_router(projects.router, prefix="/api/projects", tags=["Projects"])
+app.include_router(keys.router, prefix="/api/keys", tags=["API Keys"])
+app.include_router(templates.router, prefix="/api/templates", tags=["Templates"])
+app.include_router(export.router, prefix="/api", tags=["Export"])
 app.include_router(analyze.router, prefix="/prompt", tags=["Prompt Analysis"])
 app.include_router(suggest.router, prefix="/prompt", tags=["Prompt Analysis"])
 app.include_router(feedback.router, prefix="/feedback", tags=["User Feedback"])
