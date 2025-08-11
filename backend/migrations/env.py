@@ -24,6 +24,7 @@ sys.path.insert(0, os.path.realpath(os.path.join(os.path.dirname(__file__), '..'
 # Import your models here to ensure they are registered with SQLModel's metadata
 from backend.models.user_model import User
 from backend.models.project_model import Project
+from backend.models.analytics_model import PromptFeedback, SecurityViolationPattern
 from backend.core.settings import settings
 
 # Set the target metadata to SQLModel's metadata
