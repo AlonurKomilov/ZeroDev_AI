@@ -1,5 +1,6 @@
 import uuid
-from fastapi import Depends
+from fastapi import Depends, HTTPException, status
+from fastapi.security import APIKeyHeader
 from fastapi_users import BaseUserManager, FastAPIUsers, UUIDIDMixin
 from fastapi_users.authentication import AuthenticationBackend, JWTStrategy, BearerTransport
 from fastapi_users_db_sqlmodel import SQLModelUserDatabase
@@ -52,3 +53,22 @@ fastapi_users = FastAPIUsers[User, uuid.UUID](
 )
 
 current_active_user = fastapi_users.current_user(active=True)
+
+# Define the API key header for the emergency key
+emergency_api_key_header = APIKeyHeader(name="X-Emergency-Key", auto_error=False)
+
+async def get_owner_emergency_key(api_key: str = Depends(emergency_api_key_header)):
+    """
+    Dependency to verify the owner's emergency key.
+    """
+    if not api_key:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Emergency key is missing.",
+        )
+    if api_key != settings.OWNER_EMERGENCY_KEY:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Invalid emergency key.",
+        )
+    return api_key
