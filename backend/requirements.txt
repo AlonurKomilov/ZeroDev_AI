@@ -5,12 +5,14 @@ click
 fastapi
 fastapi-users
 fastapi-users-db-sqlmodel
+GitPython
 httpx
 openai>=1.0.0
 passlib[bcrypt]
 psycopg2-binary
 pydantic
 pydantic-settings
+PyGithub
 python-json-logger
 pytest
 pyyaml
