@@ -3,7 +3,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 
-const GenerationPage = ({ params }: { params: { project_id: string } }) => {
+interface Props {
+  params: { project_id: string };
+}
+
+const GenerationPage = ({ params }: Props) => {
   const [logs, setLogs] = useState<string[]>([]);
   const parentRef = useRef<HTMLDivElement>(null);
 
