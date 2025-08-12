@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Owner's Emergency Panel</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Owner's Emergency Panel</h1>
+        <p>This panel is for emergency use only. Actions taken here are irreversible.</p>
+
+        <div id="alert-message" class="alert" style="display: none;"></div>
+
+        <form id="emergency-form">
+            <div class="form-group">
+                <label for="emergency-key">Emergency Key</label>
+                <input type="password" id="emergency-key" name="emergency-key" required>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" id="safe-mode-btn" class="btn btn-warning">Activate Safe Mode</button>
+                <button type="button" id="shutdown-btn" class="btn btn-danger">Initiate Platform Shutdown</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
