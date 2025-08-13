@@ -6,6 +6,7 @@ fastapi
 fastapi-users
 fastapi-users-db-sqlmodel
 GitPython
+hvac
 httpx
 openai>=1.0.0
 passlib[bcrypt]
