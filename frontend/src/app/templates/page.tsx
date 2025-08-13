@@ -3,6 +3,8 @@
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import TemplateSkeleton from "@/components/ui/skeletons/TemplateSkeleton";
+import ErrorDisplay from "@/components/ui/ErrorDisplay";
 
 // Define the type for a template
 type Template = {
@@ -15,7 +17,8 @@ type Template = {
 
 // Placeholder for the actual API call
 const fetchTemplates = async (): Promise<Template[]> => {
-  const res = await fetch("/api/templates");
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const res = await fetch(`${baseUrl}/api/templates`);
   if (!res.ok) {
     throw new Error("Network response was not ok");
   }
@@ -35,24 +38,22 @@ export default function TemplatesPage() {
     isLoading,
     isError,
     error,
+    refetch,
   } = useQuery<Template[]>({
     queryKey: ["templates"],
     queryFn: fetchTemplates,
   });
 
   const handleSelectTemplate = (templateId: string) => {
-    // This should pre-populate the Ideation Canvas.
-    // We'll navigate to the generate page with the template ID as a query param.
-    // The generate page would then need to be updated to handle this.
     router.push(`/generate/new?template=${templateId}`);
   };
+
+  if (isLoading) return <TemplateSkeleton />;
+  if (isError) return <ErrorDisplay message={error.message} onRetry={() => refetch()} />;
 
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-6">Template Marketplace</h1>
-
-      {isLoading && <div>Loading templates...</div>}
-      {isError && <div>Error: {error.message}</div>}
 
       {templates && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
