@@ -2,7 +2,6 @@ import os
 from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Optional
-from backend.core.secrets_manager import get_secrets_manager
 
 class Settings(BaseSettings):
     """
@@ -10,6 +9,7 @@ class Settings(BaseSettings):
     Settings are loaded from environment variables, a .env file, or a secrets manager.
     """
     TESTING: bool = False
+    ENVIRONMENT: str = "development"
 
     model_config = SettingsConfigDict(
         env_file=os.environ.get("ENV_FILE", ".env"),
@@ -22,6 +22,10 @@ class Settings(BaseSettings):
     DEBUG: bool = False
 
     # Database settings
+    POSTGRES_USER: Optional[str] = None
+    POSTGRES_PASSWORD: Optional[str] = None
+    POSTGRES_SERVER: Optional[str] = None
+    POSTGRES_DB: Optional[str] = None
     DATABASE_URL: Optional[str] = None
 
     # Redis settings
@@ -41,11 +45,13 @@ class Settings(BaseSettings):
     ENCRYPTION_KEY: Optional[str] = None
     OWNER_EMERGENCY_KEY: Optional[str] = None
 
+    VAULT_ADDR: Optional[str] = None
+    VAULT_TOKEN: Optional[str] = None
+
     def __init__(self, **values):
         super().__init__(**values)
-        if not self.TESTING:
-            # In a production environment, you would fetch secrets from the secrets manager.
-            # For this simulation, we will fetch them on initialization.
+        if self.ENVIRONMENT == "production":
+            from backend.core.secrets_manager import get_secrets_manager
             secrets_manager = get_secrets_manager()
             self.DATABASE_URL = secrets_manager.get_secret("DATABASE_URL")
             self.REDIS_HOST = secrets_manager.get_secret("REDIS_HOST")
@@ -55,6 +61,8 @@ class Settings(BaseSettings):
             self.JWT_SECRET = secrets_manager.get_secret("JWT_SECRET")
             self.ENCRYPTION_KEY = secrets_manager.get_secret("ENCRYPTION_KEY")
             self.OWNER_EMERGENCY_KEY = secrets_manager.get_secret("OWNER_EMERGENCY_KEY")
+        else:
+            self.DATABASE_URL = f"postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_SERVER}/{self.POSTGRES_DB}"
 
     @property
     def REDIS_URL(self) -> str:
@@ -72,7 +80,6 @@ class Settings(BaseSettings):
 
         if self.CELERY_RESULT_BACKEND is None:
             self.CELERY_RESULT_BACKEND = self.REDIS_URL
-
         return self
 
 settings = Settings()
