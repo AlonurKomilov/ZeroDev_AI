@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import ReactFlow, {
   Controls,
   Background,
@@ -17,13 +17,17 @@ import 'reactflow/dist/style.css';
 import { motion } from 'framer-motion';
 
 import SuggestionNode from './SuggestionNode';
+import SmartPromptInput from '../ui/SmartPromptInput';
+import PromptHistory from './PromptHistory';
+import { usePromptStore } from '@/stores/promptStore';
+import PromptAssistant from './PromptAssistant';
+import ModelSwitcher from '../ui/ModelSwitcher';
 
 const nodeTypes = {
   suggestion: SuggestionNode,
 };
 
 const initialNodes: Node[] = [
-  // Mirror Effect Nodes (solid)
   {
     id: '1',
     position: { x: 250, y: 50 },
@@ -43,8 +47,6 @@ const initialNodes: Node[] = [
     data: { label: 'REST API for Web App' },
     className: 'bg-card border-primary',
   },
-
-  // Suggestion Cloud Nodes (transparent)
   {
     id: 's1',
     position: { x: 50, y: 125 },
@@ -65,15 +67,17 @@ const initialNodes: Node[] = [
   },
 ];
 
-
 const initialEdges: Edge[] = [
   { id: 'e1-2', source: '1', target: '2', animated: true },
   { id: 'e2-3', source: '2', target: '3', animated: true },
 ];
 
 const IdeationCanvas = () => {
-  const [nodes, setNodes] = React.useState<Node[]>(initialNodes);
-  const [edges, setEdges] = React.useState<Edge[]>(initialEdges);
+  const [nodes, setNodes] = useState<Node[]>(initialNodes);
+  const [edges, setEdges] = useState<Edge[]>(initialEdges);
+  const [prompt, setPrompt] = useState('');
+  const [showHistory, setShowHistory] = useState(false);
+  const { addPromptToHistory } = usePromptStore();
 
   const onNodesChange: OnNodesChange = useCallback(
     (changes: NodeChange[]) => setNodes((nds) => applyNodeChanges(changes, nds)),
@@ -83,6 +87,15 @@ const IdeationCanvas = () => {
     (changes: EdgeChange[]) => setEdges((eds) => applyEdgeChanges(changes, eds)),
     [setEdges]
   );
+
+  const handlePromptSubmit = () => {
+    if (prompt.trim()) {
+      addPromptToHistory(prompt);
+      // Here you would typically send the prompt to your backend
+      console.log('Submitted prompt:', prompt);
+      setPrompt('');
+    }
+  };
 
   return (
     <motion.div
@@ -103,10 +116,41 @@ const IdeationCanvas = () => {
         <Controls />
         <Background />
       </ReactFlow>
-      <div className="absolute top-4 right-4 bg-card/80 backdrop-blur-sm p-3 rounded-lg border">
-        <h3 className="font-bold text-lg">Cost Estimator</h3>
-        <p className="text-muted-foreground">Calculating...</p>
-        <p className="text-2xl font-bold text-primary">$1,234.56</p>
+      <div className="absolute bottom-4 left-4 right-4 bg-card/80 backdrop-blur-sm p-4 rounded-lg border flex flex-col gap-4">
+        <div className="relative">
+          <SmartPromptInput
+            value={prompt}
+            onChange={setPrompt}
+            placeholder="Describe your project idea..."
+          />
+          <div className="absolute top-2 right-2 flex gap-2">
+            <ModelSwitcher />
+            <button
+              onClick={() => setShowHistory(!showHistory)}
+              className="p-2 bg-gray-200 dark:bg-gray-700 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600"
+            >
+              History
+            </button>
+            <button
+              onClick={handlePromptSubmit}
+              className="p-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+            >
+              Submit
+            </button>
+          </div>
+          {showHistory && (
+            <PromptHistory
+              onSelectPrompt={(p) => {
+                setPrompt(p);
+                setShowHistory(false);
+              }}
+            />
+          )}
+        </div>
+        <PromptAssistant
+          currentPrompt={prompt}
+          onAppend={(text) => setPrompt(prompt + text)}
+        />
       </div>
     </motion.div>
   );
