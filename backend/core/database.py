@@ -5,13 +5,7 @@ from backend.core.settings import settings
 DATABASE_URL = settings.DATABASE_URL
 
 # Create the database engine
-# connect_args is for SQLite. For PostgreSQL, it's not needed.
-# I'll add a check for sqlite.
-connect_args = {}
-if "sqlite" in DATABASE_URL:
-    connect_args["check_same_thread"] = False
-
-engine = create_engine(DATABASE_URL, echo=True, connect_args=connect_args)
+engine = create_engine(settings.DATABASE_URL, echo=True)
 
 def get_session():
     """
