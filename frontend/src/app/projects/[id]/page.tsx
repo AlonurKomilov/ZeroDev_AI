@@ -5,6 +5,8 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import ExportButton from "@/components/ui/ExportButton";
 import ModifyProjectModal from "@/components/features/ModifyProjectModal";
+import ProjectDetailSkeleton from "@/components/ui/skeletons/ProjectDetailSkeleton";
+import ErrorDisplay from "@/components/ui/ErrorDisplay";
 
 // Using the same Project type definition as in the dashboard.
 type Project = {
@@ -18,9 +20,10 @@ type Project = {
 
 // Placeholder for the actual API call
 const fetchProject = async (id: string): Promise<Project> => {
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   // The fetch call is commented out as it's not needed for mock data
   // and causes issues in the test environment without a running backend API.
-  // const res = await fetch(`/api/projects/${id}`);
+  // const res = await fetch(`${baseUrl}/api/projects/${id}`);
   // if (!res.ok) {
   //   throw new Error("Network response was not ok");
   // }
@@ -48,14 +51,15 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
     isLoading,
     isError,
     error,
+    refetch,
   } = useQuery<Project>({
     queryKey: ["project", id],
     queryFn: () => fetchProject(id),
     enabled: !!id, // Only run the query if the id is available
   });
 
-  if (isLoading) return <div>Loading project details...</div>;
-  if (isError) return <div>Error: {error.message}</div>;
+  if (isLoading) return <ProjectDetailSkeleton />;
+  if (isError) return <ErrorDisplay message={error.message} onRetry={() => refetch()} />;
   if (!project) return <div>Project not found.</div>;
 
   return (
