@@ -22,24 +22,24 @@ class Settings(BaseSettings):
     DEBUG: bool = False
 
     # Database settings
-    DATABASE_URL: str
+    DATABASE_URL: Optional[str] = None
 
     # Redis settings
-    REDIS_HOST: str
-    REDIS_PORT: int
-    REDIS_DB: int
+    REDIS_HOST: Optional[str] = None
+    REDIS_PORT: Optional[int] = None
+    REDIS_DB: Optional[int] = None
 
     # Celery settings - allow them to be None initially
     CELERY_BROKER_URL: Optional[str] = None
     CELERY_RESULT_BACKEND: Optional[str] = None
 
     # OpenAI API Key
-    OPENAI_API_KEY: str
+    OPENAI_API_KEY: Optional[str] = None
 
     # Security settings
-    JWT_SECRET: str
-    ENCRYPTION_KEY: str
-    OWNER_EMERGENCY_KEY: str
+    JWT_SECRET: Optional[str] = None
+    ENCRYPTION_KEY: Optional[str] = None
+    OWNER_EMERGENCY_KEY: Optional[str] = None
 
     def __init__(self, **values):
         super().__init__(**values)

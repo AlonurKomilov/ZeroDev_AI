@@ -22,9 +22,9 @@ class SecretsManager:
         self._vault = {
             "OPENAI_API_KEY": "mock_openai_api_key_from_vault",
             "JWT_SECRET": "mock_jwt_secret_from_vault",
-            "ENCRYPTION_KEY": "mock_encryption_key_from_vault",
+            "ENCRYPTION_KEY": "3pQ-77B69QHIpjN7pZPeUriK25jxbvMBeKkOLlJjtjo=",
             "DATABASE_URL": "sqlite:///./zerodev_from_vault.db",
-            "REDIS_HOST": "localhost",
+            "REDIS_HOST": "127.0.0.1",
             "REDIS_PORT": 6379,
             "REDIS_DB": 0,
             "OWNER_EMERGENCY_KEY": "owner_emergency_key_from_vault"
