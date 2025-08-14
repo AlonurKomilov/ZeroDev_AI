@@ -37,3 +37,21 @@ MANIFEST
 
 # OS-specific files
 .DS_Store
+
+# General
+*.log
+.env
+.DS_Store
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+# Node
+node_modules/
+.npm/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+bun_output.log
+npm_output.log
