@@ -2,15 +2,22 @@
 This module defines the Celery tasks for the multi-step transformation
 workflow, such as cloning, scanning, refactoring, and validating.
 """
+
+import asyncio
+import subprocess
 import tempfile
+
 import git
 
 from backend.core.celery_app import celery_app
 from backend.core.logger import get_logger
-from backend.transformation.orchestration import transformation_orchestrator, TransformationState
 from backend.transformation.agents import foreign_code_scanner_agent
 from backend.transformation.engine import refactoring_engine
-import asyncio
+from backend.transformation.github_service import github_service
+from backend.transformation.orchestration import (
+    TransformationState,
+    transformation_orchestrator,
+)
 
 log = get_logger(__name__)
 
@@ -25,17 +32,16 @@ def refactor_task(self, job_id: str):
         # Using asyncio.run to execute the async refactor method
         asyncio.run(refactoring_engine.refactor(job_id))
     except Exception as e:
-        log.error(f"An unexpected error occurred in refactor_task for job {job_id}: {e}")
+        log.error(
+            f"An unexpected error occurred in refactor_task for job {job_id}: {e}"
+        )
         transformation_orchestrator.update_job_state(
             job_id,
             TransformationState.ERROR,
-            {"error_message": f"An unexpected error occurred during refactoring: {e}"}
+            {"error_message": f"An unexpected error occurred during refactoring: {e}"},
         )
         raise e
 
-
-from backend.transformation.github_service import github_service
-import subprocess
 
 @celery_app.task(bind=True, name="transformation.create_pr")
 def create_pr_task(self, job_id: str):
@@ -46,7 +52,9 @@ def create_pr_task(self, job_id: str):
     try:
         github_service.create_pull_request(job_id)
     except Exception as e:
-        log.error(f"An unexpected error occurred in create_pr_task for job {job_id}: {e}")
+        log.error(
+            f"An unexpected error occurred in create_pr_task for job {job_id}: {e}"
+        )
         # The service itself should have updated the job state to ERROR
         raise e
 
@@ -73,21 +81,25 @@ def validation_task(self, job_id: str):
             cwd=repo_path,
             capture_output=True,
             text=True,
-            timeout=300  # 5-minute timeout for tests
+            timeout=300,  # 5-minute timeout for tests
         )
 
         if process.returncode == 0:
             log.info(f"Tests passed for job {job_id}.")
-            transformation_orchestrator.update_job_state(job_id, TransformationState.CREATING_PR)
+            transformation_orchestrator.update_job_state(
+                job_id, TransformationState.CREATING_PR
+            )
             create_pr_task.delay(job_id)
             log.info(f"Dispatched create_pr_task for job {job_id}.")
         else:
-            log.error(f"Tests failed for job {job_id}. Return code: {process.returncode}")
+            log.error(
+                f"Tests failed for job {job_id}. Return code: {process.returncode}"
+            )
             error_output = f"Stdout:\n{process.stdout}\n\nStderr:\n{process.stderr}"
             transformation_orchestrator.update_job_state(
                 job_id,
                 TransformationState.ERROR,
-                {"error_message": f"Tests failed:\n{error_output}"}
+                {"error_message": f"Tests failed:\n{error_output}"},
             )
 
     except FileNotFoundError:
@@ -95,21 +107,23 @@ def validation_task(self, job_id: str):
         transformation_orchestrator.update_job_state(
             job_id,
             TransformationState.ERROR,
-            {"error_message": "Pytest not found. Cannot run validation."}
+            {"error_message": "Pytest not found. Cannot run validation."},
         )
     except subprocess.TimeoutExpired:
         log.error(f"Test validation timed out for job {job_id}.")
         transformation_orchestrator.update_job_state(
             job_id,
             TransformationState.ERROR,
-            {"error_message": "Test validation timed out after 5 minutes."}
+            {"error_message": "Test validation timed out after 5 minutes."},
         )
     except Exception as e:
-        log.error(f"An unexpected error occurred during validation for job {job_id}: {e}")
+        log.error(
+            f"An unexpected error occurred during validation for job {job_id}: {e}"
+        )
         transformation_orchestrator.update_job_state(
             job_id,
             TransformationState.ERROR,
-            {"error_message": f"An unexpected error occurred during validation: {e}"}
+            {"error_message": f"An unexpected error occurred during validation: {e}"},
         )
         raise e
 
@@ -135,9 +149,7 @@ def clone_and_scan_task(self, job_id: str):
 
         # Update the job state with the path to the cloned repo
         transformation_orchestrator.update_job_state(
-            job_id,
-            TransformationState.SCANNING,
-            {"cloned_repo_path": temp_dir}
+            job_id, TransformationState.SCANNING, {"cloned_repo_path": temp_dir}
         )
         log.info(f"Successfully cloned repo for job {job_id}. Path: {temp_dir}")
 
@@ -149,13 +161,15 @@ def clone_and_scan_task(self, job_id: str):
         transformation_orchestrator.update_job_state(
             job_id,
             TransformationState.ERROR,
-            {"error_message": f"Failed to clone repository: {e}"}
+            {"error_message": f"Failed to clone repository: {e}"},
         )
     except Exception as e:
-        log.error(f"An unexpected error occurred in clone_and_scan_task for job {job_id}: {e}")
+        log.error(
+            f"An unexpected error occurred in clone_and_scan_task for job {job_id}: {e}"
+        )
         transformation_orchestrator.update_job_state(
             job_id,
             TransformationState.ERROR,
-            {"error_message": f"An unexpected error occurred: {e}"}
+            {"error_message": f"An unexpected error occurred: {e}"},
         )
         raise e

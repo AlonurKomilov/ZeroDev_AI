@@ -1,7 +1,9 @@
 import hashlib
-from sqlmodel import Session, select
+
 from backend.core.database import get_session
 from backend.models.analytics_model import PromptFeedback, SecurityViolationPattern
+from sqlmodel import select
+
 
 class PromptEnrichmentService:
     """
@@ -24,25 +26,38 @@ class PromptEnrichmentService:
             # 1. Find hints from previously successful prompt suggestions.
             # We hash the prompt to see if we have suggestions for it.
             prompt_hash = hashlib.sha256(prompt.encode("utf-8")).hexdigest()
-            statement = select(PromptFeedback).where(
-                PromptFeedback.original_prompt_hash == prompt_hash,
-                PromptFeedback.upvotes > PromptFeedback.downvotes
-            ).order_by(PromptFeedback.upvotes.desc()).limit(3) # Get top 3 suggestions
+            statement = (
+                select(PromptFeedback)
+                .where(
+                    PromptFeedback.original_prompt_hash == prompt_hash,
+                    PromptFeedback.upvotes > PromptFeedback.downvotes,
+                )
+                .order_by(PromptFeedback.upvotes.desc())
+                .limit(3)
+            )  # Get top 3 suggestions
 
             successful_suggestions = session.exec(statement).all()
 
             if successful_suggestions:
-                suggestions_text = "\n".join([f'- "{s.suggested_prompt}"' for s in successful_suggestions])
+                suggestions_text = "\n".join(
+                    [f'- "{s.suggested_prompt}"' for s in successful_suggestions]
+                )
                 hint = f"--- System Hint ---\nBased on past feedback for similar requests, you might get better results with variations like:\n{suggestions_text}"
                 enrichments.append(hint)
 
             # 2. Add general warnings about common security issues.
             # This is less targeted but still useful.
-            statement = select(SecurityViolationPattern).order_by(SecurityViolationPattern.count.desc()).limit(3)
+            statement = (
+                select(SecurityViolationPattern)
+                .order_by(SecurityViolationPattern.count.desc())
+                .limit(3)
+            )
             common_violations = session.exec(statement).all()
 
             if common_violations:
-                violations_text = "\n".join([f"- {v.violation_type}" for v in common_violations])
+                violations_text = "\n".join(
+                    [f"- {v.violation_type}" for v in common_violations]
+                )
                 warning = f"--- Security Warning ---\nPlease be mindful of common security risks. Avoid prompts that could involve:\n{violations_text}"
                 enrichments.append(warning)
 
@@ -53,6 +68,7 @@ class PromptEnrichmentService:
         enriched_prompt = prompt + "\n\n" + "\n\n".join(enrichments)
         print("Prompt enrichment complete.")
         return enriched_prompt
+
 
 # Singleton instance of the service
 prompt_enrichment_service = PromptEnrichmentService()

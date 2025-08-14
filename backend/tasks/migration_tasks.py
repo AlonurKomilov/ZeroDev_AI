@@ -1,10 +1,13 @@
 """
 Celery tasks for data migration.
 """
+
 import time
 import zipfile
 from pathlib import Path
+
 from backend.core.celery_app import celery_app
+
 
 @celery_app.task
 def export_user_data_task(user_id: str):
@@ -54,4 +57,6 @@ def export_user_data_task(user_id: str):
     # Simulate some processing time
     time.sleep(5)
 
-    return {"message": f"Export complete for user {user_id}. You can download the data from {zip_path}"}
+    return {
+        "message": f"Export complete for user {user_id}. You can download the data from {zip_path}"
+    }

@@ -13,6 +13,7 @@ CATEGORY_MD_MAP = {
     "cli/": "docs/CLI_VERSIONS.md",
 }
 
+
 def write_md_block(payload: Dict):
     file_path = payload["file"]
     version = payload["version"]

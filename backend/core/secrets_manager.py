@@ -5,10 +5,13 @@ This module provides a centralized service for managing secrets, such as API key
 database credentials, and other sensitive data. It is designed to integrate with
 a production-grade secrets management system like HashiCorp Vault.
 """
+
 import os
 from functools import lru_cache
+
 import hvac
 from backend.core.settings import settings
+
 
 class SecretsManager:
     """
@@ -16,13 +19,16 @@ class SecretsManager:
     In a real implementation, this class would contain logic to connect to
     HashiCorp Vault, AWS Secrets Manager, or another secrets backend.
     """
+
     def get_secret(self, secret_name: str) -> str:
         raise NotImplementedError
+
 
 class VaultSecretsManager(SecretsManager):
     """
     A secrets manager that fetches secrets from HashiCorp Vault.
     """
+
     def __init__(self, vault_addr: str, vault_token: str):
         self.client = hvac.Client(url=vault_addr, token=vault_token)
         if not self.client.is_authenticated():
@@ -34,14 +40,16 @@ class VaultSecretsManager(SecretsManager):
         The secret is assumed to be in a KV v2 secret engine at the path 'zerodev'.
         """
         response = self.client.secrets.kv.v2.read_secret_version(
-            path='zerodev',
+            path="zerodev",
         )
-        return response['data']['data'].get(secret_name)
+        return response["data"]["data"].get(secret_name)
+
 
 class MockSecretsManager(SecretsManager):
     """
     A simulated secrets manager for local development and testing.
     """
+
     def __init__(self):
         self._vault = {
             "OPENAI_API_KEY": "mock_openai_api_key_from_vault",
@@ -51,7 +59,7 @@ class MockSecretsManager(SecretsManager):
             "REDIS_HOST": "127.0.0.1",
             "REDIS_PORT": "6379",
             "REDIS_DB": "0",
-            "OWNER_EMERGENCY_KEY": "owner_emergency_key_from_vault"
+            "OWNER_EMERGENCY_KEY": "owner_emergency_key_from_vault",
         }
 
     def get_secret(self, secret_name: str) -> str:
@@ -60,6 +68,7 @@ class MockSecretsManager(SecretsManager):
         """
         print(f"Fetching secret from mock vault: {secret_name}")
         return self._vault.get(secret_name)
+
 
 @lru_cache(maxsize=None)
 def get_secrets_manager() -> SecretsManager:
@@ -70,6 +79,8 @@ def get_secrets_manager() -> SecretsManager:
         vault_addr = os.getenv("VAULT_ADDR")
         vault_token = os.getenv("VAULT_TOKEN")
         if not vault_addr or not vault_token:
-            raise ValueError("VAULT_ADDR and VAULT_TOKEN must be set in production environment")
+            raise ValueError(
+                "VAULT_ADDR and VAULT_TOKEN must be set in production environment"
+            )
         return VaultSecretsManager(vault_addr, vault_token)
     return MockSecretsManager()

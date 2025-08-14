@@ -1,11 +1,13 @@
-import uuid
 import shutil
+import uuid
 from pathlib import Path
+
 
 class ProjectStorageService:
     """
     Manages the file system for user projects.
     """
+
     BASE_PATH = Path("workspace/projects")
 
     def get_project_path(self, user_id: uuid.UUID, project_id: uuid.UUID) -> Path:
@@ -29,5 +31,6 @@ class ProjectStorageService:
         project_path = self.get_project_path(user_id, project_id)
         if project_path.exists() and project_path.is_dir():
             shutil.rmtree(project_path)
+
 
 project_storage_service = ProjectStorageService()

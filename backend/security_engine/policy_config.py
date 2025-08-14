@@ -4,9 +4,10 @@ from typing import Dict, Optional
 
 CONFIG_PATH = Path(__file__).parent / "policy_config.json"
 
+
 def load_policy_config(role: Optional[str] = None) -> Dict:
     """
-    Load policy config based on user role (if available). 
+    Load policy config based on user role (if available).
     Fallback to global policy if no role-specific exists.
     """
     if not CONFIG_PATH.exists():
@@ -29,6 +30,7 @@ def load_policy_config(role: Optional[str] = None) -> Dict:
 
 
 FILTER_RULES_PATH = Path(__file__).parent / "filter_rules.json"
+
 
 def load_filter_rules() -> Dict:
     """
