@@ -24,8 +24,8 @@ def export_user_data_task(user_id: str):
     db_dump_path = export_dir / "db_dump.sql"
     with open(db_dump_path, "w") as f:
         f.write(f"-- SQL Dump for user {user_id}\n")
-        f.write("SELECT * FROM projects WHERE user_id = ...;\n")
-        f.write("SELECT * FROM users WHERE id = ...;\n")
+        f.write(f"SELECT * FROM projects WHERE user_id = '{user_id}';\n")
+        f.write(f"SELECT * FROM users WHERE id = '{user_id}';\n")
 
     # 2. Simulate archiving project files
     project_files_dir = export_dir / "projects"
@@ -40,9 +40,9 @@ def export_user_data_task(user_id: str):
     with open(restore_script_path, "w") as f:
         f.write("#!/bin/bash\n")
         f.write(f"# Restore script for user {user_id}\n")
-        f.write("echo 'Restoring database...'\n")
+        f.write("echo 'Restoring database'\n")
         f.write("psql -f db_dump.sql\n")
-        f.write("echo 'Restoring project files...'\n")
+        f.write("echo 'Restoring project files'\n")
         f.write("cp -r projects/* /path/to/projects/\n")
 
     # Create a zip file of the exported data
