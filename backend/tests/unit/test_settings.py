@@ -1,6 +1,6 @@
-import os
 import pytest
 from backend.core.settings import Settings
+
 
 @pytest.mark.unit
 def test_settings_load_from_env(monkeypatch):
@@ -20,10 +20,9 @@ def test_settings_load_from_env(monkeypatch):
     monkeypatch.setenv("ENCRYPTION_KEY", "-0y53Tfnc9dmHei5tfnr3asC1n4hAi1fkiUY59Fv__I=")
     monkeypatch.setenv("OWNER_EMERGENCY_KEY", "test_emergency_key")
 
-
     # Instantiate the settings class, which should trigger it to load from the env
     # We must create a new instance to force re-reading of env vars
-    settings = Settings(_env_file=None) # Pass None to prevent loading a .env file
+    settings = Settings(_env_file=None)  # Pass None to prevent loading a .env file
 
     assert settings.APP_NAME == "Test App"
     assert settings.DEBUG is True

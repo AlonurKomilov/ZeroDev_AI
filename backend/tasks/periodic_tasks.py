@@ -1,6 +1,7 @@
 # This file will contain Celery tasks that run on a schedule.
-from backend.core.celery_app import celery_app
 from backend.agents.feedback_analysis_agent import feedback_analysis_agent
+from backend.core.celery_app import celery_app
+
 
 @celery_app.task
 def run_feedback_analysis():

@@ -1,10 +1,11 @@
-import os
 import shutil
 import subprocess
 import tempfile
 import uuid
 from pathlib import Path
+
 from backend.services.project_storage import project_storage_service
+
 
 class ReviewAgent:
     """
@@ -24,7 +25,9 @@ class ReviewAgent:
         :return: A dictionary containing the review results.
         """
         print(f"Starting review for project: {project_id}")
-        source_project_path = project_storage_service.get_project_path(uuid.UUID(user_id), uuid.UUID(project_id))
+        source_project_path = project_storage_service.get_project_path(
+            uuid.UUID(user_id), uuid.UUID(project_id)
+        )
 
         if not source_project_path.exists():
             return {"success": False, "error": "Source project path does not exist."}
@@ -48,12 +51,18 @@ class ReviewAgent:
             apply_command = ["patch", "-p1", "-i", str(patch_file_path)]
             try:
                 # We run this from within the sandboxed project directory.
-                result = subprocess.run(apply_command, cwd=sandbox_path, capture_output=True, text=True, check=True)
+                result = subprocess.run(
+                    apply_command,
+                    cwd=sandbox_path,
+                    capture_output=True,
+                    text=True,
+                    check=True,
+                )
                 print("Patch applied successfully.")
                 print(result.stdout)
             except (subprocess.CalledProcessError, FileNotFoundError) as e:
                 error_message = f"Failed to apply patch: {e}"
-                if hasattr(e, 'stderr'):
+                if hasattr(e, "stderr"):
                     error_message += f"\nStderr: {e.stderr}"
                 print(error_message)
                 return {"success": False, "error": error_message}
@@ -73,7 +82,10 @@ class ReviewAgent:
                 return test_result
 
             print(f"Review completed successfully for project: {project_id}")
-            return {"success": True, "details": "Patch applied, linted, and tested successfully."}
+            return {
+                "success": True,
+                "details": "Patch applied, linted, and tested successfully.",
+            }
 
     def _run_linting(self, project_path: Path) -> dict:
         """Placeholder for running linters."""

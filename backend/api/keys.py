@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import Session
 from pydantic import BaseModel
+from sqlmodel import Session
 
 from backend.core.database import get_session
 from backend.core.security import current_active_user
@@ -9,9 +9,11 @@ from backend.services.encryption import encryption_service
 
 router = APIRouter()
 
+
 class ApiKeyCreate(BaseModel):
     service_name: str
     api_key: str
+
 
 @router.post("/", status_code=201)
 def add_api_key(
@@ -36,6 +38,7 @@ def add_api_key(
 
     return {"message": f"API key for {key_in.service_name} has been added."}
 
+
 @router.get("/", response_model=list[str])
 def get_api_key_services(
     *,
@@ -47,6 +50,7 @@ def get_api_key_services(
     if current_user.llm_api_keys is None:
         return []
     return list(current_user.llm_api_keys.keys())
+
 
 @router.delete("/{service_name}", status_code=204)
 def delete_api_key(
@@ -64,4 +68,6 @@ def delete_api_key(
         session.commit()
         return {"ok": True}
     else:
-        raise HTTPException(status_code=404, detail="API key for this service not found.")
+        raise HTTPException(
+            status_code=404, detail="API key for this service not found."
+        )

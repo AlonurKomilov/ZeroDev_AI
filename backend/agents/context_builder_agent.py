@@ -1,7 +1,9 @@
 import os
 import uuid
 from pathlib import Path
+
 from backend.services.project_storage import project_storage_service
+
 
 class ContextBuilderAgent:
     """
@@ -23,13 +25,17 @@ class ContextBuilderAgent:
 
         try:
             # The user_id is required by the project_storage_service to locate the project directory.
-            project_path = project_storage_service.get_project_path(uuid.UUID(user_id), uuid.UUID(project_id))
+            project_path = project_storage_service.get_project_path(
+                uuid.UUID(user_id), uuid.UUID(project_id)
+            )
         except (ValueError, TypeError):
             # Handle cases where user_id or project_id are not valid UUIDs
             return {"error": "Invalid user_id or project_id format."}
 
         if not project_path.exists() or not project_path.is_dir():
-            return {"error": f"Project directory not found for project_id: {project_id}"}
+            return {
+                "error": f"Project directory not found for project_id: {project_id}"
+            }
 
         context_files = {}
 
@@ -41,16 +47,21 @@ class ContextBuilderAgent:
                 relative_path = file_path.relative_to(project_path)
 
                 try:
-                    with open(file_path, 'r', encoding='utf-8') as f:
+                    with open(file_path, "r", encoding="utf-8") as f:
                         content = f.read()
                     context_files[str(relative_path)] = content
                 except Exception as e:
                     # This could happen for binary files or files with encoding issues.
                     print(f"Could not read file {file_path}: {e}")
-                    context_files[str(relative_path)] = f"Error: Could not read file content. It may be a binary file. Details: {e}"
+                    context_files[str(relative_path)] = (
+                        f"Error: Could not read file content. It may be a binary file. Details: {e}"
+                    )
 
-        print(f"Context built for project: {project_id}. Found {len(context_files)} files.")
+        print(
+            f"Context built for project: {project_id}. Found {len(context_files)} files."
+        )
         return context_files
+
 
 # Singleton instance of the agent
 context_builder_agent = ContextBuilderAgent()

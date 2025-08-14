@@ -1,7 +1,11 @@
-from version_engine.md_writer import write_md_block
-from version_engine.manifest_writer import save_manifest, load_manifest
-from version_engine.history_writer import load_file_history, save_file_history
-from version_engine.changelog_writer import append_to_changelog
+from version_engine.changelog_writer import append_to_changelog  # type: ignore
+from version_engine.history_writer import (  # type: ignore
+    load_file_history,
+    save_file_history,
+)
+from version_engine.manifest_writer import load_manifest, save_manifest  # type: ignore
+from version_engine.md_writer import write_md_block  # type: ignore
+
 
 def rollback_version(file: str, target_version: str):
     """
@@ -33,7 +37,7 @@ def rollback_version(file: str, target_version: str):
         "version": entry["version"],
         "updated": entry.get("updated"),
         "features": entry.get("features", []),
-        "next": entry.get("next", [])
+        "next": entry.get("next", []),
     }
     write_md_block(payload)
     append_to_changelog(payload)

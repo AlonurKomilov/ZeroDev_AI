@@ -1,10 +1,12 @@
 """Generate actual project source files from ProjectSpec using GPT-4o."""
+
 from __future__ import annotations
 
-import json
 import os
 from pathlib import Path
+
 from openai import AsyncOpenAI
+
 from backend.models.spec_model import ProjectSpec
 
 client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
