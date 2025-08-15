@@ -1,10 +1,12 @@
 import asyncio
-from backend.core.celery_app import celery_app
+
 from backend.core.ai_router import get_llm_adapter
-from backend.models.spec_model import ProjectSpec
+from backend.core.celery_app import celery_app
 from backend.core.logger import get_logger
+from backend.models.spec_model import ProjectSpec
 
 log = get_logger(__name__)
+
 
 @celery_app.task(bind=True, name="tasks.parse_prompt")
 def parse_prompt_task(self, prompt: str, model_name: str = "gpt-4o-mini") -> dict:
@@ -27,7 +29,10 @@ def parse_prompt_task(self, prompt: str, model_name: str = "gpt-4o-mini") -> dic
             {"role": "user", "content": prompt},
         ]
 
-        response_format = {"type": "json_object", "schema": ProjectSpec.model_json_schema()}
+        response_format = {
+            "type": "json_object",
+            "schema": ProjectSpec.model_json_schema(),
+        }
 
         # Get or create an event loop for the async call
         try:
@@ -38,23 +43,20 @@ def parse_prompt_task(self, prompt: str, model_name: str = "gpt-4o-mini") -> dic
 
         completion = loop.run_until_complete(
             adapter.chat_completion(
-                messages=messages,
-                model=model_name,
-                response_format=response_format
+                messages=messages, model=model_name, response_format=response_format
             )
         )
 
-        spec_json_str = completion['choices'][0]['message']['content']
+        spec_json_str = completion["choices"][0]["message"]["content"]
         project_spec = ProjectSpec.model_validate_json(spec_json_str)
-        log.info(f"Successfully parsed prompt into spec for project: {project_spec.project_name}")
+        log.info(
+            f"Successfully parsed prompt into spec for project: {project_spec.project_name}"
+        )
         return project_spec.model_dump()
     except Exception as exc:
         log.error(f"Error in prompt parsing task: {exc}", exc_info=True)
         self.update_state(
-            state='FAILURE',
-            meta={
-                'exc_type': type(exc).__name__,
-                'exc_message': str(exc)
-            }
+            state="FAILURE",
+            meta={"exc_type": type(exc).__name__, "exc_message": str(exc)},
         )
         raise exc

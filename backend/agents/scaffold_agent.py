@@ -1,9 +1,9 @@
 """Generate a minimal folder tree + boiler-plate FastAPI micro-service.
 Later versions will use LangChain + GPT-4o for smarter scaffolding.
 """
+
 from __future__ import annotations
 
-import os
 from pathlib import Path
 from textwrap import dedent
 
@@ -62,7 +62,7 @@ def scaffold_project(dest: Path) -> None:
                     with:
                       python-version: '3.12'
                   - run: python -m pip install -r requirements.txt
-                  - run: echo "No tests yet – generated project."  
+                  - run: echo "No tests yet – generated project."
             """,
         ).strip(),
     )

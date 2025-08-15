@@ -1,11 +1,17 @@
 import asyncio
-from typing import Callable, Any, Coroutine
+from typing import Any, Callable, Coroutine
 
-from tenacity import retry, stop_after_attempt, wait_exponential, RetryError, before_sleep_log
+from tenacity import (
+    before_sleep_log,
+    retry,
+    stop_after_attempt,
+    wait_exponential,
+)
 
 from backend.core.logger import get_logger
 
 log = get_logger(__name__)
+
 
 class AgentManager:
     """
@@ -27,7 +33,7 @@ class AgentManager:
         self,
         agent_func: Callable[..., Coroutine[Any, Any, Any]],
         *args: Any,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> Any:
         """
         Executes an agent function with configured resilience patterns.
@@ -49,7 +55,7 @@ class AgentManager:
             stop=stop_after_attempt(self.default_retries),
             wait=wait_exponential(multiplier=1, min=2, max=30),
             before_sleep=before_sleep_log(log, "INFO"),
-            reraise=True  # Reraise the last exception after retries are exhausted
+            reraise=True,  # Reraise the last exception after retries are exhausted
         )
 
         # Wrap the core agent call with the retry logic
@@ -60,17 +66,21 @@ class AgentManager:
                 log.info(f"Attempting to execute agent: {agent_name}...")
                 # The actual execution is wrapped in asyncio.wait_for for the timeout
                 result = await asyncio.wait_for(
-                    agent_func(*args, **kwargs),
-                    timeout=self.default_timeout
+                    agent_func(*args, **kwargs), timeout=self.default_timeout
                 )
                 log.info(f"Agent {agent_name} executed successfully.")
                 return result
             except asyncio.TimeoutError:
-                log.error(f"Agent {agent_name} timed out after {self.default_timeout} seconds.")
+                log.error(
+                    f"Agent {agent_name} timed out after {self.default_timeout} seconds."
+                )
                 # This exception will be caught by the retry decorator
                 raise
             except Exception as e:
-                log.error(f"Exception during agent execution '{agent_name}': {e}", exc_info=True)
+                log.error(
+                    f"Exception during agent execution '{agent_name}': {e}",
+                    exc_info=True,
+                )
                 # This will also be caught by the retry decorator
                 raise
 

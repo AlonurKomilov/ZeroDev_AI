@@ -1,6 +1,6 @@
 import json
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 from typing import List, Optional
 
 # Constants
@@ -12,13 +12,14 @@ PENDING_DIR = Path("version_engine/pending")
 HISTORY_DIR.mkdir(parents=True, exist_ok=True)
 PENDING_DIR.mkdir(parents=True, exist_ok=True)
 
+
 def update_version_log(
     file: str,
     version: str,
     features: List[str],
     next: Optional[List[str]] = None,
     updated: Optional[str] = None,
-    status: str = "pending"
+    status: str = "pending",
 ):
     """
     Main version updater — logs a version entry for a file and prepares it for approval.
@@ -31,7 +32,7 @@ def update_version_log(
         updated (str): override update date (default: today)
         status (str): 'pending', 'approved', etc.
     """
-    updated = updated or datetime.utcnow().strftime('%Y-%m-%d')
+    updated = updated or datetime.utcnow().strftime("%Y-%m-%d")
     file_id = file.replace("/", "__")
 
     payload = {
@@ -41,7 +42,7 @@ def update_version_log(
         "next": next or [],
         "updated": updated,
         "status": status,
-        "submitted_at": datetime.utcnow().isoformat()
+        "submitted_at": datetime.utcnow().isoformat(),
     }
 
     # Save to pending folder for approval

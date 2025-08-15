@@ -1,8 +1,9 @@
+import json
+from datetime import datetime
+from pathlib import Path
+
 from fastapi import APIRouter
 from pydantic import BaseModel
-from datetime import datetime
-import json
-from pathlib import Path
 
 from backend.core.logger import get_logger
 
@@ -11,6 +12,7 @@ log = get_logger(__name__)
 
 # Define the log path relative to the project root
 LOG_PATH = Path("backend/security_engine/feedback_log.json")
+
 
 class FeedbackEntry(BaseModel):
     user_id: str
@@ -28,7 +30,7 @@ def submit_feedback(data: FeedbackEntry):
         "suggested_prompt": data.suggested_prompt,
         "original_prompt": data.original_prompt,
         "index": data.index,
-        "timestamp": datetime.utcnow().isoformat()
+        "timestamp": datetime.utcnow().isoformat(),
     }
 
     log.info(f"Logging feedback for user {data.user_id}: {data.feedback}")
@@ -44,7 +46,9 @@ def submit_feedback(data: FeedbackEntry):
                 try:
                     logs = json.load(f)
                     if not isinstance(logs, list):
-                        log.warning("feedback_log.json does not contain a list. Starting fresh.")
+                        log.warning(
+                            "feedback_log.json does not contain a list. Starting fresh."
+                        )
                         logs = []
                 except json.JSONDecodeError:
                     log.warning("feedback_log.json is corrupted. Starting fresh.")

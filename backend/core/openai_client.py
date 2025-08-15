@@ -1,5 +1,5 @@
-from openai import AsyncOpenAI
 from backend.core.settings import settings
+from openai import AsyncOpenAI
 
 # The client is initialized here, but the validation of the API key
 # is moved to the adapter that actually uses it. This allows the application

@@ -1,20 +1,23 @@
 import os
-from pydantic import Field, model_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Optional
+
+from pydantic import model_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
 
 class Settings(BaseSettings):
     """
     Centralized application settings.
     Settings are loaded from environment variables, a .env file, or a secrets manager.
     """
+
     TESTING: bool = False
     ENVIRONMENT: str = "development"
 
     model_config = SettingsConfigDict(
         env_file=os.environ.get("ENV_FILE", ".env"),
-        env_file_encoding='utf-8',
-        extra='ignore'
+        env_file_encoding="utf-8",
+        extra="ignore",
     )
 
     # Core settings
@@ -52,6 +55,7 @@ class Settings(BaseSettings):
         super().__init__(**values)
         if self.ENVIRONMENT == "production":
             from backend.core.secrets_manager import get_secrets_manager
+
             secrets_manager = get_secrets_manager()
             self.DATABASE_URL = secrets_manager.get_secret("DATABASE_URL")
             self.REDIS_HOST = secrets_manager.get_secret("REDIS_HOST")
@@ -69,8 +73,8 @@ class Settings(BaseSettings):
         """Constructs the Redis URL from its components."""
         return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB}"
 
-    @model_validator(mode='after')
-    def set_celery_defaults(self) -> 'Settings':
+    @model_validator(mode="after")
+    def set_celery_defaults(self) -> "Settings":
         """
         Set default Celery URLs based on Redis settings if they are not provided.
         This runs after the other fields have been loaded and validated.
@@ -81,5 +85,6 @@ class Settings(BaseSettings):
         if self.CELERY_RESULT_BACKEND is None:
             self.CELERY_RESULT_BACKEND = self.REDIS_URL
         return self
+
 
 settings = Settings()

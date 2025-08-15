@@ -1,11 +1,13 @@
-import json
 import hashlib
-from pathlib import Path
+import json
 from collections import defaultdict
+from pathlib import Path
 
 from sqlmodel import Session, select
+
 from backend.core.database import get_session
 from backend.models.analytics_model import PromptFeedback, SecurityViolationPattern
+
 
 class FeedbackAnalysisAgent:
     """
@@ -68,7 +70,7 @@ class FeedbackAnalysisAgent:
         for (prompt_hash, suggested_prompt), votes in aggregated_feedback.items():
             statement = select(PromptFeedback).where(
                 PromptFeedback.original_prompt_hash == prompt_hash,
-                PromptFeedback.suggested_prompt == suggested_prompt
+                PromptFeedback.suggested_prompt == suggested_prompt,
             )
             db_entry = session.exec(statement).first()
 
@@ -83,12 +85,14 @@ class FeedbackAnalysisAgent:
                     original_prompt_hash=prompt_hash,
                     suggested_prompt=suggested_prompt,
                     upvotes=votes["upvotes"],
-                    downvotes=votes["downvotes"]
+                    downvotes=votes["downvotes"],
                 )
             session.add(db_entry)
 
         session.commit()
-        print(f"Upserted {len(aggregated_feedback)} feedback entries into the database.")
+        print(
+            f"Upserted {len(aggregated_feedback)} feedback entries into the database."
+        )
 
     def _analyze_audit_log(self, session: Session):
         """
@@ -113,18 +117,24 @@ class FeedbackAnalysisAgent:
 
         # Upsert violation counts
         for violation_type, count in violation_counts.items():
-            statement = select(SecurityViolationPattern).where(SecurityViolationPattern.violation_type == violation_type)
+            statement = select(SecurityViolationPattern).where(
+                SecurityViolationPattern.violation_type == violation_type
+            )
             db_entry = session.exec(statement).first()
 
             if db_entry:
-                db_entry.count = count # Overwrite with the latest total count
+                db_entry.count = count  # Overwrite with the latest total count
             else:
-                db_entry = SecurityViolationPattern(violation_type=violation_type, count=count)
+                db_entry = SecurityViolationPattern(
+                    violation_type=violation_type, count=count
+                )
 
             session.add(db_entry)
 
         session.commit()
-        print(f"Upserted {len(violation_counts)} security violation types into the database.")
+        print(
+            f"Upserted {len(violation_counts)} security violation types into the database."
+        )
 
 
 # Singleton instance of the agent

@@ -1,5 +1,5 @@
-import asyncio
 from backend.core.ai_router import get_llm_adapter
+
 
 class CodePatcherAgent:
     """
@@ -8,7 +8,9 @@ class CodePatcherAgent:
     proposed code changes.
     """
 
-    async def generate_patch(self, prompt: str, context: dict, model_name: str = "gpt-4o-mini") -> str:
+    async def generate_patch(
+        self, prompt: str, context: dict, model_name: str = "gpt-4o-mini"
+    ) -> str:
         """
         Generates a diff patch in the standard unified format.
 
@@ -51,7 +53,9 @@ Based on the user request and the provided files, generate the required diff fil
         try:
             adapter = get_llm_adapter(model_name)
             # The chat_completion method is async, so we need to await it.
-            response = await adapter.chat_completion(messages=messages, model=model_name)
+            response = await adapter.chat_completion(
+                messages=messages, model=model_name
+            )
 
             # 3. Extract the diff from the model's response.
             if response and response.get("choices"):
@@ -59,9 +63,9 @@ Based on the user request and the provided files, generate the required diff fil
 
                 # Clean the patch to remove markdown code blocks if the model adds them.
                 if patch.startswith("```diff"):
-                    patch = patch[len("```diff\n"):]
+                    patch = patch[len("```diff\n") :]
                 if patch.endswith("```"):
-                    patch = patch[:-len("```")]
+                    patch = patch[: -len("```")]
 
                 print("Successfully generated patch.")
                 return patch.strip()
@@ -74,6 +78,7 @@ Based on the user request and the provided files, generate the required diff fil
             error_msg = f"Error: An exception occurred while communicating with the language model: {e}"
             print(error_msg)
             return error_msg
+
 
 # Singleton instance of the agent
 code_patcher_agent = CodePatcherAgent()

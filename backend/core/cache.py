@@ -1,10 +1,10 @@
 import functools
 import json
-from typing import Callable, Any
+from typing import Any, Callable
 
 import redis
-from backend.core.redis import get_redis
 from backend.core.logger import get_logger
+from backend.core.redis import get_redis
 
 log = get_logger(__name__)
 
@@ -16,6 +16,7 @@ def cache(ttl: int = 3600) -> Callable:
 
     :param ttl: Time-to-live for the cache key in seconds. Defaults to 1 hour.
     """
+
     def decorator(func: Callable) -> Callable:
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
@@ -49,9 +50,13 @@ def cache(ttl: int = 3600) -> Callable:
 
                 return result
             except redis.exceptions.RedisError as e:
-                log.error(f"Redis cache error for key {cache_key}: {e}. Falling back to function call.", exc_info=True)
+                log.error(
+                    f"Redis cache error for key {cache_key}: {e}. Falling back to function call.",
+                    exc_info=True,
+                )
                 # In case of Redis error, just call the function without caching
                 return func(*args, **kwargs)
 
         return wrapper
+
     return decorator

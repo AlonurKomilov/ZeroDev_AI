@@ -1,13 +1,16 @@
 import json
 from pathlib import Path
-from pydantic import BaseModel
 from typing import List
+
+from pydantic import BaseModel
+
 
 class Template(BaseModel):
     id: str
     name: str
     description: str
     tags: List[str]
+
 
 class TemplateService:
     def __init__(self, templates_file: Path):
@@ -21,6 +24,7 @@ class TemplateService:
 
     def get_all_templates(self) -> List[Template]:
         return self.templates
+
 
 # Assuming the templates.json file is in the same directory as the main app
 templates_path = Path(__file__).parent.parent / "templates.json"

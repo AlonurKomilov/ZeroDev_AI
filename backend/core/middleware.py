@@ -4,15 +4,17 @@ Global Status Middleware
 This middleware checks for a global system status on every request and can
 take actions like blocking requests based on the current status.
 """
+
+import logging
+
+from backend.core.redis import get_redis
+from backend.core.security import bearer_transport, get_jwt_strategy, get_user_manager
 from fastapi import Request, status
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
-from backend.core.redis import get_redis
-from backend.core.security import get_jwt_strategy, get_user_manager, bearer_transport
-from backend.models.user_model import User
-import logging
 
 log = logging.getLogger(__name__)
+
 
 class GlobalStatusMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
@@ -46,7 +48,9 @@ class GlobalStatusMiddleware(BaseHTTPMiddleware):
             if not is_superuser:
                 return JSONResponse(
                     status_code=status.HTTP_403_FORBIDDEN,
-                    content={"detail": "The system is in safe mode. Only admins can access it."},
+                    content={
+                        "detail": "The system is in safe mode. Only admins can access it."
+                    },
                 )
 
         response = await call_next(request)
