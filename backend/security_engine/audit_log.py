@@ -3,11 +3,33 @@ import json
 import re
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Dict, Optional, Any
 
-LOG_FILE_PATH = Path("security_log.json")  # or security_log.jsonl for JSON Lines
+LOG_FILE_PATH = Path("security_log.json")
 MAX_LOG_ENTRIES = 1000
 ENABLE_DEDUPLICATION = True
+
+
+class AuditLogger:
+    """Simple audit logger for security events"""
+    
+    def __init__(self, log_file: Optional[Path] = None):
+        self.log_file = log_file or LOG_FILE_PATH
+    
+    async def log_event(self, event_type: str, data: Dict[str, Any]):
+        """Log a security event"""
+        try:
+            # For now, just log to file
+            # In production, this would send to proper audit system
+            with open(self.log_file, "a") as f:
+                log_entry = {
+                    "timestamp": datetime.utcnow().isoformat(),
+                    "event_type": event_type,
+                    "data": data
+                }
+                f.write(json.dumps(log_entry) + "\n")
+        except Exception as e:
+            print(f"Error logging audit event: {e}")
 
 
 def clean_sensitive_data(prompt: str) -> str:
