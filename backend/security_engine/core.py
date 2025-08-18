@@ -212,12 +212,12 @@ class SecurityEngine:
         
         # Content analysis using existing filters
         try:
-            analysis_result = analyze_prompt(content, context.user_role)
+            analysis_result: Dict[str, Any] = analyze_prompt(content, context.user_role)
             
             block_threshold = self.config["content_security"]["block_score_threshold"]
             warn_threshold = self.config["content_security"]["warn_score_threshold"]
             
-            total_score = analysis_result.get("total_score", 0)
+            total_score: float = analysis_result.get("total_score", 0.0)
             
             if total_score >= block_threshold:
                 violations.append(SecurityViolation(
@@ -283,7 +283,7 @@ class SecurityEngine:
                                 additional_data: Optional[Dict[str, Any]] = None):
         """Log security events for monitoring and auditing"""
         try:
-            log_data = {
+            log_data: Dict[str, Any] = {
                 "event_type": event_type,
                 "timestamp": datetime.now().isoformat(),
                 "request_id": context.request_id,

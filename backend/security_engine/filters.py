@@ -4,7 +4,7 @@ from typing import Any, Dict, Optional
 from .policy_config import load_filter_rules, load_policy_config
 
 
-def analyze_prompt(prompt: str, role: Optional[str] = None) -> Dict:
+def analyze_prompt(prompt: str, role: Optional[str] = None) -> Dict[str, Any]:
     """
     Analyze the given prompt using scoring and role-based policy config.
     Returns status, total score, violations list with explanations.
