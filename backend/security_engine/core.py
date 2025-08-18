@@ -11,7 +11,6 @@ all security components across the ZeroDev AI platform, including:
 - Threat detection and response
 """
 
-import asyncio
 import hashlib
 import hmac
 import json
@@ -20,14 +19,13 @@ import time
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Tuple
 
-from fastapi import Request, HTTPException, status
+from fastapi import Request
 from pydantic import BaseModel, Field
 
 # Use standard logging instead of custom logger for now
 logger = logging.getLogger(__name__)
 
 from .filters import analyze_prompt
-from .policy_config import load_policy_config, load_filter_rules
 
 
 class SecurityContext(BaseModel):
@@ -99,23 +97,31 @@ class SecurityEngine:
                 user_email = request.state.user.email
                 user_role = getattr(request.state.user, 'role', 'user')
             
+            # Get IP address safely
+            ip_address = "unknown"
+            if request.client and request.client.host:
+                ip_address = request.client.host
+            
             # Generate request ID
             request_id = hashlib.md5(
-                f"{request.client.host}{time.time()}{request.url}".encode()
+                f"{ip_address}{time.time()}{request.url}".encode()
             ).hexdigest()[:16]
             
             return SecurityContext(
                 user_id=user_id,
                 user_email=user_email,
                 user_role=user_role,
-                ip_address=request.client.host,
+                ip_address=ip_address,
                 user_agent=request.headers.get("user-agent", ""),
                 request_id=request_id
             )
             
         except Exception as e:
             logger.error(f"Error creating security context: {e}")
-            return SecurityContext(ip_address=request.client.host)
+            ip_address = "unknown"
+            if request.client and request.client.host:
+                ip_address = request.client.host
+            return SecurityContext(ip_address=ip_address)
     
     async def check_rate_limit(self, context: SecurityContext, endpoint: str) -> Tuple[bool, Optional[SecurityViolation]]:
         """Check rate limiting for requests"""
@@ -192,7 +198,7 @@ class SecurityEngine:
     
     async def validate_content(self, content: str, context: SecurityContext) -> Tuple[bool, List[SecurityViolation]]:
         """Validate content for security issues"""
-        violations = []
+        violations: List[SecurityViolation] = []
         
         # Length check
         max_length = self.config["content_security"]["max_prompt_length"]
@@ -211,26 +217,28 @@ class SecurityEngine:
             block_threshold = self.config["content_security"]["block_score_threshold"]
             warn_threshold = self.config["content_security"]["warn_score_threshold"]
             
-            if analysis_result["total_score"] >= block_threshold:
+            total_score = analysis_result.get("total_score", 0)
+            
+            if total_score >= block_threshold:
                 violations.append(SecurityViolation(
                     violation_type="content_policy",
                     severity="high",
                     message="Content blocked due to security policy violations",
                     details={
-                        "score": analysis_result["total_score"],
-                        "violations": analysis_result["violations"]
+                        "score": total_score,
+                        "violations": analysis_result.get("violations", [])
                     }
                 ))
                 return False, violations
             
-            elif analysis_result["total_score"] >= warn_threshold:
+            elif total_score >= warn_threshold:
                 violations.append(SecurityViolation(
                     violation_type="content_warning",
                     severity="low", 
                     message="Content flagged for review",
                     details={
-                        "score": analysis_result["total_score"],
-                        "violations": analysis_result["violations"]
+                        "score": total_score,
+                        "violations": analysis_result.get("violations", [])
                     }
                 ))
         
