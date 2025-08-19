@@ -14,7 +14,7 @@ from backend.api.emergency import (
     generate_request_signature,
     verify_request_signature
 )
-import pyotp
+import pyotp  # type: ignore
 
 async def test_emergency_security():
     """Test core emergency security features"""

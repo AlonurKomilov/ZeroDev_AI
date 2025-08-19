@@ -8,7 +8,7 @@ import asyncio
 import time
 import hashlib
 import hmac
-import pyotp
+import pyotp  # type: ignore
 
 # Import core functions directly (copy from emergency.py)
 def verify_timestamp(timestamp: int) -> bool:

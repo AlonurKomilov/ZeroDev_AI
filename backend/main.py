@@ -139,6 +139,8 @@ app.include_router(emergency.router, prefix="/api/emergency", tags=["Emergency"]
 app.include_router(dashboard.router, prefix="/api/dashboard", tags=["Dashboard"])
 app.include_router(migration.router, prefix="/api/migration", tags=["Migration"])
 app.include_router(upgrade.router, prefix="/api", tags=["Upgrade"])
+# WebSocket integration temporarily disabled
+# app.include_router(websocket.router, tags=["WebSocket"])
 
 
 @app.get("/", tags=["Health"])

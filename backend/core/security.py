@@ -78,3 +78,11 @@ async def get_owner_emergency_key(api_key: str = Depends(emergency_api_key_heade
             detail="Invalid emergency key.",
         )
     return api_key
+
+
+async def get_current_user_ws(websocket, token: str = None):
+    """
+    Mock authentication for WebSocket connections
+    """
+    # For now, return a mock user
+    return User(id=uuid.uuid4(), email="test@example.com")

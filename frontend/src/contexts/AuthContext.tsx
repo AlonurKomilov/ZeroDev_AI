@@ -139,7 +139,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    // Return safe defaults for SSR compatibility
+    return {
+      user: null,
+      isLoading: true,
+      isAuthenticated: false,
+      login: async () => {},
+      register: async () => {},
+      logout: async () => {},
+      refreshProfile: async () => {},
+      error: null,
+      clearError: () => {},
+    };
   }
   return context;
 };

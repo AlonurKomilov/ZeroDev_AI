@@ -24,7 +24,9 @@ sys.path.insert(
 )
 
 # Import your models here to ensure they are registered with SQLModel's metadata
-
+from backend.models.user_model import User
+from backend.models.project_model import Project  
+from backend.models.analytics_model import PromptFeedback, SecurityViolationPattern
 
 # Set the target metadata to SQLModel's metadata
 target_metadata = SQLModel.metadata
