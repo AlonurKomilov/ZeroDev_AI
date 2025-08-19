@@ -1,7 +1,8 @@
 import subprocess
 import uuid
-from pathlib import Path
+
 from backend.services.project_storage import project_storage_service
+
 
 class ApplyPatchService:
     """
@@ -24,12 +25,17 @@ class ApplyPatchService:
         print(f"Applying approved patch to project: {project_id}")
 
         try:
-            project_path = project_storage_service.get_project_path(uuid.UUID(user_id), uuid.UUID(project_id))
+            project_path = project_storage_service.get_project_path(
+                uuid.UUID(user_id), uuid.UUID(project_id)
+            )
         except (ValueError, TypeError):
             return {"success": False, "error": "Invalid user_id or project_id format."}
 
         if not project_path.exists() or not project_path.is_dir():
-            return {"success": False, "error": f"Project directory not found for project_id: {project_id}"}
+            return {
+                "success": False,
+                "error": f"Project directory not found for project_id: {project_id}",
+            }
 
         # Use a temporary name for the patch file to avoid conflicts.
         patch_file_path = project_path / f"tmp_{uuid.uuid4()}.patch"
@@ -47,7 +53,7 @@ class ApplyPatchService:
                 cwd=project_path,
                 capture_output=True,
                 text=True,
-                check=True  # Raises CalledProcessError on non-zero exit codes.
+                check=True,  # Raises CalledProcessError on non-zero exit codes.
             )
             print(f"Patch applied successfully to project {project_id}.")
             if result.stdout:
@@ -76,6 +82,7 @@ class ApplyPatchService:
             # Ensure the temporary patch file is always removed.
             if patch_file_path.exists():
                 patch_file_path.unlink()
+
 
 # Singleton instance of the service
 apply_patch_service = ApplyPatchService()

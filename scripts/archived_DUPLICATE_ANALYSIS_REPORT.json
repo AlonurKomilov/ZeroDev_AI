@@ -1,0 +1,68 @@
+{
+  "timestamp": "2025-08-19T05:37:36.340272",
+  "project_root": "/workspaces/ZeroDev_AI",
+  "analysis": {
+    "total_duplicate_sets": 2,
+    "total_duplicate_files": 17,
+    "potential_space_savings": 10795,
+    "safe_to_remove": [],
+    "manual_review_needed": [
+      {
+        "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "files": [
+          "/workspaces/ZeroDev_AI/emergency-panel-app/script_enhanced.js",
+          "/workspaces/ZeroDev_AI/backend/docs/BACKEND_MODULES_SEQUENCE.md",
+          "/workspaces/ZeroDev_AI/backend/tasks/__init__.py",
+          "/workspaces/ZeroDev_AI/backend/api/__init__.py",
+          "/workspaces/ZeroDev_AI/backend/security_engine/__init__.py",
+          "/workspaces/ZeroDev_AI/backend/security_engine/audit_log.py",
+          "/workspaces/ZeroDev_AI/backend/security_engine/filters.py",
+          "/workspaces/ZeroDev_AI/backend/security_engine/core.py",
+          "/workspaces/ZeroDev_AI/backend/security_engine/middleware.py",
+          "/workspaces/ZeroDev_AI/frontend/src/contexts/AuthContext.tsx",
+          "/workspaces/ZeroDev_AI/frontend/src/components/features/.gitkeep",
+          "/workspaces/ZeroDev_AI/frontend/src/components/ui/.gitkeep",
+          "/workspaces/ZeroDev_AI/frontend/src/components/layouts/.gitkeep",
+          "/workspaces/ZeroDev_AI/frontend/src/app/(auth)/signup/page.tsx",
+          "/workspaces/ZeroDev_AI/frontend/src/app/(auth)/login/page.tsx",
+          "/workspaces/ZeroDev_AI/frontend/src/app/auth/signup/page.tsx",
+          "/workspaces/ZeroDev_AI/frontend/src/app/projects/[id]/page.tsx"
+        ],
+        "reason": "Multiple files in important directories; Different file extensions; Core application files"
+      },
+      {
+        "hash": "383fbf219e91f876a87d89361ac8a9b3ecc137113f989757deb16a3f947a1b31",
+        "files": [
+          "/workspaces/ZeroDev_AI/frontend/jules-scratch/verification/initial_page.png",
+          "/workspaces/ZeroDev_AI/frontend/jules-scratch/verification/error.png"
+        ],
+        "reason": "Multiple files in important directories"
+      }
+    ],
+    "by_extension": {
+      ".js": 16,
+      ".png": 1
+    },
+    "by_directory": {
+      "/workspaces/ZeroDev_AI/emergency-panel-app": 1,
+      "/workspaces/ZeroDev_AI/backend/docs": 1,
+      "/workspaces/ZeroDev_AI/backend/tasks": 1,
+      "/workspaces/ZeroDev_AI/backend/api": 1,
+      "/workspaces/ZeroDev_AI/backend/security_engine": 5,
+      "/workspaces/ZeroDev_AI/frontend/src/contexts": 1,
+      "/workspaces/ZeroDev_AI/frontend/src/components/features": 1,
+      "/workspaces/ZeroDev_AI/frontend/src/components/ui": 1,
+      "/workspaces/ZeroDev_AI/frontend/src/components/layouts": 1,
+      "/workspaces/ZeroDev_AI/frontend/src/app/(auth)/signup": 1,
+      "/workspaces/ZeroDev_AI/frontend/src/app/(auth)/login": 1,
+      "/workspaces/ZeroDev_AI/frontend/src/app/auth/signup": 1,
+      "/workspaces/ZeroDev_AI/frontend/src/app/projects/[id]": 1,
+      "/workspaces/ZeroDev_AI/frontend/jules-scratch/verification": 2
+    }
+  },
+  "resolved": {
+    "auto_resolved_count": 0,
+    "space_saved_bytes": 0,
+    "space_saved_mb": 0.0
+  }
+}

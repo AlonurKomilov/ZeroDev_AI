@@ -1,0 +1,261 @@
+{
+  "fixes_applied": [
+    {
+      "type": "js_rename",
+      "old": "/workspaces/ZeroDev_AI/frontend/src/contexts/ToastContext.tsx",
+      "new": "/workspaces/ZeroDev_AI/frontend/src/contexts/toast-context.tsx",
+      "change": "ToastContext → toast-context"
+    },
+    {
+      "type": "js_rename",
+      "old": "/workspaces/ZeroDev_AI/frontend/src/contexts/AuthContext.tsx",
+      "new": "/workspaces/ZeroDev_AI/frontend/src/contexts/auth-context.tsx",
+      "change": "AuthContext → auth-context"
+    },
+    {
+      "type": "js_rename",
+      "old": "/workspaces/ZeroDev_AI/frontend/src/components/features/SuggestionNode.tsx",
+      "new": "/workspaces/ZeroDev_AI/frontend/src/components/features/suggestion-node.tsx",
+      "change": "SuggestionNode → suggestion-node"
+    },
+    {
+      "type": "js_rename",
+      "old": "/workspaces/ZeroDev_AI/frontend/src/components/features/PromptAssistant.tsx",
+      "new": "/workspaces/ZeroDev_AI/frontend/src/components/features/prompt-assistant.tsx",
+      "change": "PromptAssistant → prompt-assistant"
+    },
+    {
+      "type": "js_rename",
+      "old": "/workspaces/ZeroDev_AI/frontend/src/components/features/AdvancedFeedback.test.tsx",
+      "new": "/workspaces/ZeroDev_AI/frontend/src/components/features/advanced-feedback-test.tsx",
+      "change": "AdvancedFeedback.test → advanced-feedback-test"
+    },
+    {
+      "type": "js_rename",
+      "old": "/workspaces/ZeroDev_AI/frontend/src/components/features/PromptHistory.tsx",
+      "new": "/workspaces/ZeroDev_AI/frontend/src/components/features/prompt-history.tsx",
+      "change": "PromptHistory → prompt-history"
+    },
+    {
+      "type": "js_rename",
+      "old": "/workspaces/ZeroDev_AI/frontend/src/components/features/AdvancedFeedback.tsx",
+      "new": "/workspaces/ZeroDev_AI/frontend/src/components/features/advanced-feedback.tsx",
+      "change": "AdvancedFeedback → advanced-feedback"
+    },
+    {
+      "type": "js_rename",
+      "old": "/workspaces/ZeroDev_AI/frontend/src/components/features/IdeationCanvas.tsx",
+      "new": "/workspaces/ZeroDev_AI/frontend/src/components/features/ideation-canvas.tsx",
+      "change": "IdeationCanvas → ideation-canvas"
+    },
+    {
+      "type": "js_rename",
+      "old": "/workspaces/ZeroDev_AI/frontend/src/components/features/ModifyProjectModal.tsx",
+      "new": "/workspaces/ZeroDev_AI/frontend/src/components/features/modify-project-modal.tsx",
+      "change": "ModifyProjectModal → modify-project-modal"
+    },
+    {
+      "type": "js_rename",
+      "old": "/workspaces/ZeroDev_AI/frontend/src/components/providers/ThemeProvider.tsx",
+      "new": "/workspaces/ZeroDev_AI/frontend/src/components/providers/theme-provider.tsx",
+      "change": "ThemeProvider → theme-provider"
+    },
+    {
+      "type": "js_rename",
+      "old": "/workspaces/ZeroDev_AI/frontend/src/components/providers/QueryProvider.tsx",
+      "new": "/workspaces/ZeroDev_AI/frontend/src/components/providers/query-provider.tsx",
+      "change": "QueryProvider → query-provider"
+    },
+    {
+      "type": "js_rename",
+      "old": "/workspaces/ZeroDev_AI/frontend/src/components/ui/ModelSwitcher.tsx",
+      "new": "/workspaces/ZeroDev_AI/frontend/src/components/ui/model-switcher.tsx",
+      "change": "ModelSwitcher → model-switcher"
+    },
+    {
+      "type": "js_rename",
+      "old": "/workspaces/ZeroDev_AI/frontend/src/components/ui/ExportButton.tsx",
+      "new": "/workspaces/ZeroDev_AI/frontend/src/components/ui/export-button.tsx",
+      "change": "ExportButton → export-button"
+    },
+    {
+      "type": "js_rename",
+      "old": "/workspaces/ZeroDev_AI/frontend/src/components/ui/SmartPromptInput.tsx",
+      "new": "/workspaces/ZeroDev_AI/frontend/src/components/ui/smart-prompt-input.tsx",
+      "change": "SmartPromptInput → smart-prompt-input"
+    },
+    {
+      "type": "js_rename",
+      "old": "/workspaces/ZeroDev_AI/frontend/src/components/ui/StatusIndicator.test.tsx",
+      "new": "/workspaces/ZeroDev_AI/frontend/src/components/ui/status-indicator-test.tsx",
+      "change": "StatusIndicator.test → status-indicator-test"
+    },
+    {
+      "type": "js_rename",
+      "old": "/workspaces/ZeroDev_AI/frontend/src/components/ui/ErrorDisplay.tsx",
+      "new": "/workspaces/ZeroDev_AI/frontend/src/components/ui/error-display.tsx",
+      "change": "ErrorDisplay → error-display"
+    },
+    {
+      "type": "js_rename",
+      "old": "/workspaces/ZeroDev_AI/frontend/src/components/ui/StatusIndicator.tsx",
+      "new": "/workspaces/ZeroDev_AI/frontend/src/components/ui/status-indicator.tsx",
+      "change": "StatusIndicator → status-indicator"
+    },
+    {
+      "type": "js_rename",
+      "old": "/workspaces/ZeroDev_AI/frontend/src/components/ui/ThemeToggle.tsx",
+      "new": "/workspaces/ZeroDev_AI/frontend/src/components/ui/theme-toggle.tsx",
+      "change": "ThemeToggle → theme-toggle"
+    },
+    {
+      "type": "js_rename",
+      "old": "/workspaces/ZeroDev_AI/frontend/src/components/ui/Portal.tsx",
+      "new": "/workspaces/ZeroDev_AI/frontend/src/components/ui/portal.tsx",
+      "change": "Portal → portal"
+    },
+    {
+      "type": "js_rename",
+      "old": "/workspaces/ZeroDev_AI/frontend/src/components/layouts/Topbar.test.tsx",
+      "new": "/workspaces/ZeroDev_AI/frontend/src/components/layouts/topbar-test.tsx",
+      "change": "Topbar.test → topbar-test"
+    },
+    {
+      "type": "js_rename",
+      "old": "/workspaces/ZeroDev_AI/frontend/src/components/layouts/Topbar.tsx",
+      "new": "/workspaces/ZeroDev_AI/frontend/src/components/layouts/topbar.tsx",
+      "change": "Topbar → topbar"
+    },
+    {
+      "type": "js_rename",
+      "old": "/workspaces/ZeroDev_AI/frontend/src/components/layouts/Sidebar.tsx",
+      "new": "/workspaces/ZeroDev_AI/frontend/src/components/layouts/sidebar.tsx",
+      "change": "Sidebar → sidebar"
+    },
+    {
+      "type": "js_rename",
+      "old": "/workspaces/ZeroDev_AI/frontend/src/components/features/admin/FeedbackManagement.tsx",
+      "new": "/workspaces/ZeroDev_AI/frontend/src/components/features/admin/feedback-management.tsx",
+      "change": "FeedbackManagement → feedback-management"
+    },
+    {
+      "type": "js_rename",
+      "old": "/workspaces/ZeroDev_AI/frontend/src/components/features/admin/BusinessMetrics.tsx",
+      "new": "/workspaces/ZeroDev_AI/frontend/src/components/features/admin/business-metrics.tsx",
+      "change": "BusinessMetrics → business-metrics"
+    },
+    {
+      "type": "js_rename",
+      "old": "/workspaces/ZeroDev_AI/frontend/src/components/features/admin/HealthMetrics.tsx",
+      "new": "/workspaces/ZeroDev_AI/frontend/src/components/features/admin/health-metrics.tsx",
+      "change": "HealthMetrics → health-metrics"
+    },
+    {
+      "type": "js_rename",
+      "old": "/workspaces/ZeroDev_AI/frontend/src/components/features/admin/UserAnalytics.tsx",
+      "new": "/workspaces/ZeroDev_AI/frontend/src/components/features/admin/user-analytics.tsx",
+      "change": "UserAnalytics → user-analytics"
+    },
+    {
+      "type": "js_rename",
+      "old": "/workspaces/ZeroDev_AI/frontend/src/components/ui/skeletons/DashboardSkeleton.tsx",
+      "new": "/workspaces/ZeroDev_AI/frontend/src/components/ui/skeletons/dashboard-skeleton.tsx",
+      "change": "DashboardSkeleton → dashboard-skeleton"
+    },
+    {
+      "type": "js_rename",
+      "old": "/workspaces/ZeroDev_AI/frontend/src/components/ui/skeletons/ProjectDetailSkeleton.tsx",
+      "new": "/workspaces/ZeroDev_AI/frontend/src/components/ui/skeletons/project-detail-skeleton.tsx",
+      "change": "ProjectDetailSkeleton → project-detail-skeleton"
+    },
+    {
+      "type": "js_rename",
+      "old": "/workspaces/ZeroDev_AI/frontend/src/components/ui/skeletons/TemplateSkeleton.tsx",
+      "new": "/workspaces/ZeroDev_AI/frontend/src/components/ui/skeletons/template-skeleton.tsx",
+      "change": "TemplateSkeleton → template-skeleton"
+    },
+    {
+      "type": "js_rename",
+      "old": "/workspaces/ZeroDev_AI/admin-dashboard-app/tailwind.config.ts",
+      "new": "/workspaces/ZeroDev_AI/admin-dashboard-app/tailwind-config.ts",
+      "change": "tailwind.config → tailwind-config"
+    },
+    {
+      "type": "js_rename",
+      "old": "/workspaces/ZeroDev_AI/frontend/tailwind.config.ts",
+      "new": "/workspaces/ZeroDev_AI/frontend/tailwind-config.ts",
+      "change": "tailwind.config → tailwind-config"
+    },
+    {
+      "type": "js_rename",
+      "old": "/workspaces/ZeroDev_AI/frontend/vitest.config.ts",
+      "new": "/workspaces/ZeroDev_AI/frontend/vitest-config.ts",
+      "change": "vitest.config → vitest-config"
+    },
+    {
+      "type": "js_rename",
+      "old": "/workspaces/ZeroDev_AI/emergency-panel-app/script_enhanced.js",
+      "new": "/workspaces/ZeroDev_AI/emergency-panel-app/script-enhanced.js",
+      "change": "script_enhanced → script-enhanced"
+    },
+    {
+      "type": "directory_rename",
+      "old": "/workspaces/ZeroDev_AI/.vscode",
+      "new": "/workspaces/ZeroDev_AI/vscode",
+      "change": ".vscode → vscode"
+    },
+    {
+      "type": "directory_rename",
+      "old": "/workspaces/ZeroDev_AI/backend/version_engine",
+      "new": "/workspaces/ZeroDev_AI/backend/version-engine",
+      "change": "version_engine → version-engine"
+    },
+    {
+      "type": "directory_rename",
+      "old": "/workspaces/ZeroDev_AI/backend/security_engine",
+      "new": "/workspaces/ZeroDev_AI/backend/security-engine",
+      "change": "security_engine → security-engine"
+    },
+    {
+      "type": "directory_rename",
+      "old": "/workspaces/ZeroDev_AI/frontend/src/app/(auth)",
+      "new": "/workspaces/ZeroDev_AI/frontend/src/app/auth",
+      "change": "(auth) → auth"
+    },
+    {
+      "type": "directory_rename",
+      "old": "/workspaces/ZeroDev_AI/frontend/src/app/(admin)",
+      "new": "/workspaces/ZeroDev_AI/frontend/src/app/admin",
+      "change": "(admin) → admin"
+    },
+    {
+      "type": "directory_rename",
+      "old": "/workspaces/ZeroDev_AI/frontend/src/app/generate/[project_id]",
+      "new": "/workspaces/ZeroDev_AI/frontend/src/app/generate/project-id",
+      "change": "[project_id] → project-id"
+    },
+    {
+      "type": "directory_rename",
+      "old": "/workspaces/ZeroDev_AI/frontend/src/app/projects/[id]",
+      "new": "/workspaces/ZeroDev_AI/frontend/src/app/projects/id",
+      "change": "[id] → id"
+    },
+    {
+      "type": "directory_rename",
+      "old": "/workspaces/ZeroDev_AI/frontend/src/app/projects/id/review/[req_id]",
+      "new": "/workspaces/ZeroDev_AI/frontend/src/app/projects/id/review/req-id",
+      "change": "[req_id] → req-id"
+    },
+    {
+      "type": "directory_rename",
+      "old": "/workspaces/ZeroDev_AI/frontend/src/app/projects/id/upgrade/[pr_id]",
+      "new": "/workspaces/ZeroDev_AI/frontend/src/app/projects/id/upgrade/pr-id",
+      "change": "[pr_id] → pr-id"
+    }
+  ],
+  "skipped_files": [],
+  "summary": {
+    "js_rename": 33,
+    "directory_rename": 9
+  }
+}

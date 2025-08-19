@@ -1,10 +1,12 @@
-import os
 import shutil
 import subprocess
 import tempfile
 import uuid
 from pathlib import Path
+from typing import Dict, Any, List, Optional
+
 from backend.services.project_storage import project_storage_service
+
 
 class ReviewAgent:
     """
@@ -13,7 +15,7 @@ class ReviewAgent:
     relevant integration tests in a secure sandbox environment.
     """
 
-    def review_patch(self, user_id: str, project_id: str, diff_patch: str) -> dict:
+    def review_patch(self, user_id: str, project_id: str, diff_patch: str) -> Dict[str, Any]:
         """
         Reviews a diff patch by applying it to a sandboxed copy of the project
         and running validation checks.
@@ -24,7 +26,9 @@ class ReviewAgent:
         :return: A dictionary containing the review results.
         """
         print(f"Starting review for project: {project_id}")
-        source_project_path = project_storage_service.get_project_path(uuid.UUID(user_id), uuid.UUID(project_id))
+        source_project_path = project_storage_service.get_project_path(
+            uuid.UUID(user_id), uuid.UUID(project_id)
+        )
 
         if not source_project_path.exists():
             return {"success": False, "error": "Source project path does not exist."}
@@ -48,12 +52,18 @@ class ReviewAgent:
             apply_command = ["patch", "-p1", "-i", str(patch_file_path)]
             try:
                 # We run this from within the sandboxed project directory.
-                result = subprocess.run(apply_command, cwd=sandbox_path, capture_output=True, text=True, check=True)
+                result = subprocess.run(
+                    apply_command,
+                    cwd=sandbox_path,
+                    capture_output=True,
+                    text=True,
+                    check=True,
+                )
                 print("Patch applied successfully.")
                 print(result.stdout)
             except (subprocess.CalledProcessError, FileNotFoundError) as e:
                 error_message = f"Failed to apply patch: {e}"
-                if hasattr(e, 'stderr'):
+                if hasattr(e, "stderr") and e.stderr:
                     error_message += f"\nStderr: {e.stderr}"
                 print(error_message)
                 return {"success": False, "error": error_message}
@@ -73,29 +83,393 @@ class ReviewAgent:
                 return test_result
 
             print(f"Review completed successfully for project: {project_id}")
-            return {"success": True, "details": "Patch applied, linted, and tested successfully."}
+            return {
+                "success": True,
+                "details": "Patch applied, linted, and tested successfully.",
+            }
 
-    def _run_linting(self, project_path: Path) -> dict:
-        """Placeholder for running linters."""
-        print("Skipping linting (placeholder).")
-        # Example for a Python project:
-        # try:
-        #     subprocess.run(["flake8", "."], cwd=project_path, check=True, capture_output=True, text=True)
-        #     return {"success": True}
-        # except subprocess.CalledProcessError as e:
-        #     return {"success": False, "error": f"Linting failed: {e.stdout}"}
-        return {"success": True}
+    def _run_linting(self, project_path: Path) -> Dict[str, Any]:
+        """
+        Run appropriate linters based on detected project type.
+        Supports Python, JavaScript/TypeScript, and general file linting.
+        """
+        print(f"Running linting for project at: {project_path}")
+        lint_results = {
+            "python": [],
+            "javascript": [],
+            "typescript": [],
+            "general": [],
+            "success": True,
+            "summary": ""
+        }
+        
+        # Detect project type and run appropriate linters
+        try:
+            # Python linting (flake8, black, mypy)
+            if self._has_python_files(project_path):
+                python_result = self._run_python_linting(project_path)
+                lint_results["python"] = python_result
+                if not python_result.get("success", True):
+                    lint_results["success"] = False
+            
+            # JavaScript/TypeScript linting (ESLint, Prettier)
+            if self._has_js_files(project_path):
+                js_result = self._run_js_linting(project_path)
+                lint_results["javascript"] = js_result
+                if not js_result.get("success", True):
+                    lint_results["success"] = False
+                    
+            if self._has_ts_files(project_path):
+                ts_result = self._run_ts_linting(project_path)
+                lint_results["typescript"] = ts_result
+                if not ts_result.get("success", True):
+                    lint_results["success"] = False
+            
+            # General file checks (file permissions, naming conventions)
+            general_result = self._run_general_checks(project_path)
+            lint_results["general"] = general_result
+            
+            # Generate summary
+            lint_results["summary"] = self._generate_lint_summary(lint_results)
+            
+        except Exception as e:
+            lint_results["success"] = False
+            lint_results["error"] = f"Linting failed with error: {str(e)}"
+            print(f"Linting error: {e}")
+        
+        return lint_results
 
-    def _run_tests(self, project_path: Path) -> dict:
-        """Placeholder for running tests."""
-        print("Skipping tests (placeholder).")
-        # Example for a Python project with pytest:
-        # try:
-        #     subprocess.run(["pytest"], cwd=project_path, check=True, capture_output=True, text=True)
-        #     return {"success": True}
-        # except subprocess.CalledProcessError as e:
-        #     return {"success": False, "error": f"Tests failed: {e.stdout}"}
-        return {"success": True}
+    def _has_python_files(self, project_path: Path) -> bool:
+        """Check if the project contains Python files."""
+        return bool(list(project_path.glob('**/*.py'))) or (project_path / 'requirements.txt').exists() or (project_path / 'pyproject.toml').exists()
+
+    def _has_js_files(self, project_path: Path) -> bool:
+        """Check if the project contains JavaScript files."""
+        return bool(list(project_path.glob('**/*.js'))) or (project_path / 'package.json').exists()
+
+    def _has_ts_files(self, project_path: Path) -> bool:
+        """Check if the project contains TypeScript files."""
+        return bool(list(project_path.glob('**/*.ts'))) or bool(list(project_path.glob('**/*.tsx'))) or (project_path / 'tsconfig.json').exists()
+
+    def _run_python_linting(self, project_path: Path) -> Dict[str, Any]:
+        """Run Python-specific linting tools."""
+        results = {"success": True, "issues": [], "tools_used": []}
+        
+        # Run flake8 for style and basic linting
+        try:
+            result = subprocess.run(
+                ["flake8", ".", "--format=json"], 
+                cwd=project_path, 
+                capture_output=True, 
+                text=True, 
+                timeout=30
+            )
+            if result.returncode == 0:
+                results["tools_used"].append("flake8: PASSED")
+            else:
+                results["success"] = False
+                results["tools_used"].append("flake8: FAILED")
+                if result.stdout:
+                    results["issues"].extend(result.stdout.split('\n'))
+        except (subprocess.CalledProcessError, subprocess.TimeoutExpired, FileNotFoundError):
+            results["tools_used"].append("flake8: NOT_AVAILABLE")
+
+        # Run black for formatting check
+        try:
+            result = subprocess.run(
+                ["black", ".", "--check", "--diff"], 
+                cwd=project_path, 
+                capture_output=True, 
+                text=True, 
+                timeout=30
+            )
+            if result.returncode == 0:
+                results["tools_used"].append("black: PASSED")
+            else:
+                results["tools_used"].append("black: FORMATTING_ISSUES")
+                if result.stdout:
+                    results["issues"].append(f"Black formatting issues:\n{result.stdout}")
+        except (subprocess.CalledProcessError, subprocess.TimeoutExpired, FileNotFoundError):
+            results["tools_used"].append("black: NOT_AVAILABLE")
+
+        return results
+
+    def _run_js_linting(self, project_path: Path) -> Dict[str, Any]:
+        """Run JavaScript-specific linting tools."""
+        results = {"success": True, "issues": [], "tools_used": []}
+        
+        # Try ESLint
+        try:
+            result = subprocess.run(
+                ["npx", "eslint", ".", "--format", "json"], 
+                cwd=project_path, 
+                capture_output=True, 
+                text=True, 
+                timeout=30
+            )
+            if result.returncode == 0:
+                results["tools_used"].append("eslint: PASSED")
+            else:
+                results["success"] = False
+                results["tools_used"].append("eslint: FAILED")
+                if result.stdout:
+                    results["issues"].append(f"ESLint issues:\n{result.stdout}")
+        except (subprocess.CalledProcessError, subprocess.TimeoutExpired, FileNotFoundError):
+            results["tools_used"].append("eslint: NOT_AVAILABLE")
+
+        return results
+
+    def _run_ts_linting(self, project_path: Path) -> Dict[str, Any]:
+        """Run TypeScript-specific linting tools."""
+        results = {"success": True, "issues": [], "tools_used": []}
+        
+        # Check TypeScript compilation
+        try:
+            result = subprocess.run(
+                ["npx", "tsc", "--noEmit"], 
+                cwd=project_path, 
+                capture_output=True, 
+                text=True, 
+                timeout=30
+            )
+            if result.returncode == 0:
+                results["tools_used"].append("tsc: PASSED")
+            else:
+                results["success"] = False
+                results["tools_used"].append("tsc: FAILED")
+                if result.stderr:
+                    results["issues"].append(f"TypeScript compilation errors:\n{result.stderr}")
+        except (subprocess.CalledProcessError, subprocess.TimeoutExpired, FileNotFoundError):
+            results["tools_used"].append("tsc: NOT_AVAILABLE")
+
+        return results
+
+    def _run_general_checks(self, project_path: Path) -> Dict[str, Any]:
+        """Run general project checks."""
+        results = {"success": True, "warnings": [], "checks": []}
+        
+        # Check for required project files
+        required_files = {
+            "README.md": "Documentation", 
+            ".gitignore": "Git ignore file"
+        }
+        
+        for file, description in required_files.items():
+            if not (project_path / file).exists():
+                results["warnings"].append(f"Missing {description}: {file}")
+            else:
+                results["checks"].append(f"Found {description}")
+        
+        # Check for common security files
+        security_files = ['.env', '.env.local', '.env.production']
+        for file in security_files:
+            if (project_path / file).exists():
+                results["warnings"].append(f"Warning: Found {file} - ensure it contains no secrets")
+                results["checks"].append(f"security_file_check: {file}_FOUND")
+        
+        # Check file permissions (basic check)
+        try:
+            for file_path in project_path.rglob('*'):
+                if file_path.is_file() and file_path.suffix in ['.sh', '.py']:
+                    # Check if executable files have proper permissions
+                    if not file_path.stat().st_mode & 0o111:
+                        results["checks"].append(f"permissions: {file_path.name}_NOT_EXECUTABLE")
+        except Exception as e:
+            results["warnings"].append(f"Permission check failed: {str(e)}")
+
+        results["checks"].append("general_checks: COMPLETED")
+        return results
+
+    def _generate_lint_summary(self, lint_results: Dict[str, Any]) -> str:
+        """Generate a human-readable summary of linting results."""
+        summary_parts = []
+        
+        if lint_results.get("python"):
+            python_tools = lint_results["python"].get("tools_used", [])
+            summary_parts.append(f"Python: {', '.join(python_tools)}")
+        
+        if lint_results.get("javascript"):
+            js_tools = lint_results["javascript"].get("tools_used", [])
+            summary_parts.append(f"JavaScript: {', '.join(js_tools)}")
+        
+        if lint_results.get("typescript"):
+            ts_tools = lint_results["typescript"].get("tools_used", [])
+            summary_parts.append(f"TypeScript: {', '.join(ts_tools)}")
+        
+        if lint_results.get("general"):
+            general_checks = lint_results["general"].get("checks", [])
+            summary_parts.append(f"General: {len(general_checks)} checks")
+        
+        return " | ".join(summary_parts) if summary_parts else "No linting performed"
+
+    def _run_tests(self, project_path: Path) -> Dict[str, Any]:
+        """
+        Run appropriate tests based on detected project type.
+        Supports Python (pytest), JavaScript/Node.js (npm test), and general testing.
+        """
+        print(f"Running tests for project at: {project_path}")
+        test_results = {
+            "python": [],
+            "javascript": [], 
+            "general": [],
+            "success": True,
+            "summary": ""
+        }
+        
+        try:
+            # Python testing with pytest
+            if self._has_python_files(project_path):
+                python_result = self._run_python_tests(project_path)
+                test_results["python"] = python_result
+                if not python_result.get("success", True):
+                    test_results["success"] = False
+            
+            # JavaScript/Node.js testing
+            if self._has_js_files(project_path) or self._has_ts_files(project_path):
+                js_result = self._run_js_tests(project_path)
+                test_results["javascript"] = js_result
+                if not js_result.get("success", True):
+                    test_results["success"] = False
+            
+            # General project validation
+            general_result = self._run_general_tests(project_path)
+            test_results["general"] = general_result
+            
+            # Generate summary
+            test_results["summary"] = self._generate_test_summary(test_results)
+            
+        except Exception as e:
+            test_results["success"] = False
+            test_results["error"] = f"Testing failed with error: {str(e)}"
+            print(f"Testing error: {e}")
+        
+        return test_results
+
+    def _run_python_tests(self, project_path: Path) -> Dict[str, Any]:
+        """Run Python tests using pytest."""
+        results = {"success": True, "output": "", "tests_run": 0, "failed": 0}
+        
+        try:
+            # Try running pytest
+            result = subprocess.run(
+                ["python", "-m", "pytest", "-v", "--tb=short"],
+                cwd=project_path,
+                capture_output=True,
+                text=True,
+                timeout=60
+            )
+            
+            results["output"] = result.stdout
+            if result.returncode == 0:
+                results["success"] = True
+                # Try to parse pytest output for test count
+                if "passed" in result.stdout:
+                    import re
+                    match = re.search(r'(\d+) passed', result.stdout)
+                    if match:
+                        results["tests_run"] = int(match.group(1))
+            else:
+                results["success"] = False
+                if "failed" in result.stdout:
+                    import re
+                    match = re.search(r'(\d+) failed', result.stdout)
+                    if match:
+                        results["failed"] = int(match.group(1))
+                        
+        except (subprocess.CalledProcessError, subprocess.TimeoutExpired, FileNotFoundError):
+            results["success"] = False
+            results["output"] = "pytest not available or failed to run"
+            
+        return results
+
+    def _run_js_tests(self, project_path: Path) -> Dict[str, Any]:
+        """Run JavaScript/Node.js tests using npm."""
+        results = {"success": True, "output": "", "framework": ""}
+        
+        try:
+            # Check if package.json exists and has test script
+            package_json = project_path / "package.json"
+            if package_json.exists():
+                # Run npm test
+                result = subprocess.run(
+                    ["npm", "test"],
+                    cwd=project_path,
+                    capture_output=True,
+                    text=True,
+                    timeout=90
+                )
+                
+                results["output"] = result.stdout
+                results["success"] = result.returncode == 0
+                results["framework"] = "npm"
+            else:
+                results["success"] = False
+                results["output"] = "No package.json found"
+                
+        except (subprocess.CalledProcessError, subprocess.TimeoutExpired, FileNotFoundError):
+            results["success"] = False
+            results["output"] = "npm test failed or not available"
+            
+        return results
+
+    def _run_general_tests(self, project_path: Path) -> Dict[str, Any]:
+        """Run general project validation tests."""
+        results = {"success": True, "checks": [], "warnings": []}
+        
+        # Check for required project files
+        required_files = {
+            "README.md": "Documentation",
+            ".gitignore": "Git ignore file"
+        }
+        
+        for file, description in required_files.items():
+            if not (project_path / file).exists():
+                results["warnings"].append(f"Missing {description}: {file}")
+            else:
+                results["checks"].append(f"Found {description}")
+        
+        # Check project structure
+        if (project_path / "src").exists():
+            results["checks"].append("Source directory structure found")
+        elif (project_path / "app").exists():
+            results["checks"].append("App directory structure found")
+        
+        # Check for configuration files
+        config_files = ["pyproject.toml", "package.json", "Dockerfile", "docker-compose.yml"]
+        found_configs = []
+        for config in config_files:
+            if (project_path / config).exists():
+                found_configs.append(config)
+        
+        if found_configs:
+            results["checks"].append(f"Configuration files: {', '.join(found_configs)}")
+        
+        return results
+
+    def _generate_test_summary(self, test_results: Dict[str, Any]) -> str:
+        """Generate a human-readable summary of test results."""
+        summary_parts = []
+        
+        if test_results.get("python"):
+            python = test_results["python"]
+            if python.get("tests_run"):
+                summary_parts.append(f"Python: {python['tests_run']} tests run, {python.get('failed', 0)} failed")
+            else:
+                summary_parts.append("Python: tests attempted")
+        
+        if test_results.get("javascript"):
+            js = test_results["javascript"]
+            framework = js.get("framework", "unknown")
+            status = "passed" if js.get("success") else "failed"
+            summary_parts.append(f"JS ({framework}): {status}")
+        
+        if test_results.get("general"):
+            general = test_results["general"]
+            checks = len(general.get("checks", []))
+            warnings = len(general.get("warnings", []))
+            summary_parts.append(f"General: {checks} checks, {warnings} warnings")
+        
+        return " | ".join(summary_parts) if summary_parts else "No tests performed"
 
 
 # Singleton instance of the agent

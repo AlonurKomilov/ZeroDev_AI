@@ -5,6 +5,7 @@ from typing import Dict, List
 HISTORY_DIR = Path("version_engine/history")
 HISTORY_DIR.mkdir(parents=True, exist_ok=True)
 
+
 def load_file_history(file: str) -> List[Dict]:
     file_id = file.replace("/", "__")
     history_path = HISTORY_DIR / f"{file_id}.json"
@@ -13,12 +14,14 @@ def load_file_history(file: str) -> List[Dict]:
             return json.load(f)
     return []
 
+
 def save_file_history(file: str, history: List[Dict]):
     file_id = file.replace("/", "__")
     history_path = HISTORY_DIR / f"{file_id}.json"
     with history_path.open("w", encoding="utf-8") as f:
         json.dump(history, f, indent=2)
     print(f"[✔] History saved: {history_path.name}")
+
 
 def append_to_history(payload: Dict):
     """
@@ -36,7 +39,7 @@ def append_to_history(payload: Dict):
         "version": version,
         "updated": updated,
         "features": features,
-        "next": next_steps
+        "next": next_steps,
     }
 
     history.append(entry)

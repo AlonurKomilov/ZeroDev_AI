@@ -5,13 +5,16 @@ This API provides highly secure endpoints for accessing aggregated business and
 platform health metrics. Access is restricted by a special high-security
 authentication system with 2FA.
 """
-from fastapi import APIRouter, Depends, HTTPException, status, Header
-from pydantic import BaseModel
+
 from typing import Optional
+
+from fastapi import APIRouter, Depends, Header, HTTPException, status
+from pydantic import BaseModel
 
 router = APIRouter()
 
 # --- High-Security Authentication ---
+
 
 async def high_security_auth(
     x_ceo_token: Optional[str] = Header(None),
@@ -37,7 +40,9 @@ async def high_security_auth(
             detail="Invalid or missing 2FA code.",
         )
 
+
 # --- Pydantic Models for Dashboard Metrics ---
+
 
 class PlatformHealthMetrics(BaseModel):
     active_users: int
@@ -45,14 +50,21 @@ class PlatformHealthMetrics(BaseModel):
     api_requests_per_minute: int
     error_rate: float
 
+
 class BusinessMetrics(BaseModel):
     mrr: float
     new_customers_last_30_days: int
     churn_rate: float
 
+
 # --- API Endpoints ---
 
-@router.get("/health", response_model=PlatformHealthMetrics, dependencies=[Depends(high_security_auth)])
+
+@router.get(
+    "/health",
+    response_model=PlatformHealthMetrics,
+    dependencies=[Depends(high_security_auth)],
+)
 async def get_platform_health():
     """
     Provides platform health metrics.
@@ -65,7 +77,12 @@ async def get_platform_health():
         error_rate=0.01,
     )
 
-@router.get("/business", response_model=BusinessMetrics, dependencies=[Depends(high_security_auth)])
+
+@router.get(
+    "/business",
+    response_model=BusinessMetrics,
+    dependencies=[Depends(high_security_auth)],
+)
 async def get_business_metrics():
     """
     Provides business metrics.

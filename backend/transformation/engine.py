@@ -2,13 +2,16 @@
 This module contains the RefactoringEngine, which is the "brain" of the
 transformation process. It uses an LLM to generate code modifications.
 """
+
 import json
 import os
-import asyncio
 
-from backend.core.logger import get_logger
 from backend.core.ai_router import get_llm_adapter
-from backend.transformation.orchestration import transformation_orchestrator, TransformationState
+from backend.core.logger import get_logger
+from backend.transformation.orchestration import (
+    TransformationState,
+    transformation_orchestrator,
+)
 
 log = get_logger(__name__)
 
@@ -17,6 +20,7 @@ class RefactoringEngine:
     """
     The engine that performs code refactoring using an LLM.
     """
+
     async def refactor(self, job_id: str):
         log.info(f"Starting refactoring for job_id: {job_id}")
         job = transformation_orchestrator.get_job_status(job_id)
@@ -31,7 +35,9 @@ class RefactoringEngine:
         except (json.JSONDecodeError, TypeError):
             log.error(f"Invalid or missing architecture_map for job_id: {job_id}")
             transformation_orchestrator.update_job_state(
-                job_id, TransformationState.ERROR, {"error_message": "Invalid architecture map."}
+                job_id,
+                TransformationState.ERROR,
+                {"error_message": "Invalid architecture map."},
             )
             return
 
@@ -86,12 +92,10 @@ Please provide the refactored code in the specified JSON format.
             response_format = {"type": "json_object"}
 
             completion = await adapter.chat_completion(
-                messages=messages,
-                model="gpt-4o-mini",
-                response_format=response_format
+                messages=messages, model="gpt-4o-mini", response_format=response_format
             )
 
-            response_json_str = completion['choices'][0]['message']['content']
+            response_json_str = completion["choices"][0]["message"]["content"]
             refactored_files = json.loads(response_json_str)
 
             log.info(f"LLM generated refactoring for {len(refactored_files)} files.")
@@ -104,17 +108,23 @@ Please provide the refactored code in the specified JSON format.
                     f.write(new_content)
                 log.info(f"Applied refactoring to {file_path}")
 
-            transformation_orchestrator.update_job_state(job_id, TransformationState.VALIDATING)
+            transformation_orchestrator.update_job_state(
+                job_id, TransformationState.VALIDATING
+            )
             log.info(f"Refactoring complete for job {job_id}. Moving to validation.")
 
             # Trigger the validation task
             from backend.transformation.tasks import validation_task
+
             validation_task.delay(job_id)
 
         except Exception as e:
             log.error(f"Error during refactoring for job {job_id}: {e}", exc_info=True)
             transformation_orchestrator.update_job_state(
-                job_id, TransformationState.ERROR, {"error_message": f"Refactoring failed: {e}"}
+                job_id,
+                TransformationState.ERROR,
+                {"error_message": f"Refactoring failed: {e}"},
             )
+
 
 refactoring_engine = RefactoringEngine()

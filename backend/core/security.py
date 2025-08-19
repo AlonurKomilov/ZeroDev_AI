@@ -1,19 +1,24 @@
 import uuid
+
+from backend.core.database import get_session
+from backend.core.settings import settings
+from backend.models.user_model import User
 from fastapi import Depends, HTTPException, status
 from fastapi.security import APIKeyHeader
 from fastapi_users import BaseUserManager, FastAPIUsers, UUIDIDMixin
-from fastapi_users.authentication import AuthenticationBackend, JWTStrategy, BearerTransport
+from fastapi_users.authentication import (
+    AuthenticationBackend,
+    BearerTransport,
+    JWTStrategy,
+)
 from fastapi_users_db_sqlmodel import SQLModelUserDatabase
-
-from backend.core.settings import settings
-from backend.core.database import get_session
-from backend.models.user_model import User
 
 
 class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
     """
     Manages user-related operations.
     """
+
     reset_password_token_secret = settings.JWT_SECRET
     verification_token_secret = settings.JWT_SECRET
 
@@ -57,6 +62,7 @@ current_active_user = fastapi_users.current_user(active=True)
 # Define the API key header for the emergency key
 emergency_api_key_header = APIKeyHeader(name="X-Emergency-Key", auto_error=False)
 
+
 async def get_owner_emergency_key(api_key: str = Depends(emergency_api_key_header)):
     """
     Dependency to verify the owner's emergency key.
@@ -72,3 +78,11 @@ async def get_owner_emergency_key(api_key: str = Depends(emergency_api_key_heade
             detail="Invalid emergency key.",
         )
     return api_key
+
+
+async def get_current_user_ws(websocket, token: str = None):
+    """
+    Mock authentication for WebSocket connections
+    """
+    # For now, return a mock user
+    return User(id=uuid.uuid4(), email="test@example.com")

@@ -6,16 +6,19 @@ from typing import Dict
 MANIFEST_PATH = Path("version_manifest.json")
 HISTORY_DIR = Path("version_engine/history")
 
+
 def load_manifest() -> Dict:
     if MANIFEST_PATH.exists():
         with MANIFEST_PATH.open("r", encoding="utf-8") as f:
             return json.load(f)
     return {}
 
+
 def save_manifest(data: Dict):
     with MANIFEST_PATH.open("w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
-        print(f"[✔] Updated: version_manifest.json")
+        print("[✔] Updated: version_manifest.json")
+
 
 def apply_version_entry(payload: Dict):
     """
@@ -29,17 +32,14 @@ def apply_version_entry(payload: Dict):
 
     manifest = load_manifest()
     if file not in manifest:
-        manifest[file] = {
-            "current": version,
-            "history": []
-        }
+        manifest[file] = {"current": version, "history": []}
 
     # Add to history if new
     history_entry = {
         "version": version,
         "updated": updated,
         "features": features,
-        "next": next_steps
+        "next": next_steps,
     }
 
     manifest[file]["current"] = version

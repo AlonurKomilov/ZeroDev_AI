@@ -1,17 +1,19 @@
 from __future__ import annotations
+
 import uuid
 from typing import TYPE_CHECKING, List, Optional
 
-from fastapi_users_db_sqlmodel import SQLModelBaseUserDB
-from sqlmodel import Field, Relationship, SQLModel, Column
-from sqlalchemy.types import JSON
+from fastapi_users_db_sqlmodel import SQLModelBaseUserDB  # type: ignore
+from sqlalchemy.types import JSON  # type: ignore
+from sqlmodel import Column, Field, Relationship  # type: ignore
 
 
-class User(SQLModelBaseUserDB, table=True):
+class User(SQLModelBaseUserDB, table=True):  # type: ignore
     """
     Represents a user in the system.
     This model is compatible with FastAPI-Users and SQLModel.
     """
+
     __tablename__ = "users"
 
     id: uuid.UUID = Field(
@@ -31,6 +33,7 @@ class User(SQLModelBaseUserDB, table=True):
 
     # Relationship to projects
     projects: List["Project"] = Relationship(back_populates="user")
+
 
 if TYPE_CHECKING:
     from backend.models.project_model import Project

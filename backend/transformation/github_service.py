@@ -2,14 +2,19 @@
 This module contains the GithubService, which is responsible for all
 interactions with the GitHub API, such as creating pull requests.
 """
+
 import os
 import time
+
+import git
 from github import Github
 from github.GithubException import GithubException
-import git
 
 from backend.core.logger import get_logger
-from backend.transformation.orchestration import transformation_orchestrator, TransformationState
+from backend.transformation.orchestration import (
+    TransformationState,
+    transformation_orchestrator,
+)
 
 log = get_logger(__name__)
 
@@ -21,6 +26,7 @@ class GithubService:
     """
     A service to interact with the GitHub API.
     """
+
     def __init__(self, token: str):
         if not token:
             raise ValueError("GitHub token is required.")
@@ -37,7 +43,7 @@ class GithubService:
 
         repo_path = job["cloned_repo_path"]
         user_prompt = job["prompt"]
-        repo_url = job["repo_url"] # e.g., https://github.com/user/repo
+        repo_url = job["repo_url"]  # e.g., https://github.com/user/repo
 
         # 1. Generate branch name, title, and body
         timestamp = int(time.time())
@@ -85,28 +91,28 @@ class GithubService:
             log.info(f"Pushed branch {branch_name} to origin.")
 
             # 3. Use PyGithub to create the pull request
-            repo_name = "/".join(repo_url.split("/")[-2:]) # e.g., "user/repo"
+            repo_name = "/".join(repo_url.split("/")[-2:])  # e.g., "user/repo"
             github_repo = self.github_client.get_repo(repo_name)
 
             pr = github_repo.create_pull(
                 title=pr_title,
                 body=pr_body,
                 head=branch_name,
-                base="main" # Assuming the base branch is 'main'
+                base="main",  # Assuming the base branch is 'main'
             )
             log.info(f"Successfully created pull request: {pr.html_url}")
 
             transformation_orchestrator.update_job_state(
-                job_id,
-                TransformationState.DONE,
-                {"pull_request_url": pr.html_url}
+                job_id, TransformationState.DONE, {"pull_request_url": pr.html_url}
             )
             return pr.html_url
 
         except (git.exc.GitCommandError, GithubException) as e:
             log.error(f"Error during PR creation for job {job_id}: {e}", exc_info=True)
             transformation_orchestrator.update_job_state(
-                job_id, TransformationState.ERROR, {"error_message": f"PR creation failed: {e}"}
+                job_id,
+                TransformationState.ERROR,
+                {"error_message": f"PR creation failed: {e}"},
             )
             raise e
 
