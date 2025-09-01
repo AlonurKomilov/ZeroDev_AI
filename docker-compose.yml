@@ -59,7 +59,7 @@ services:
     build:
       context: .
       dockerfile: backend/Dockerfile
-    command: celery -A backend.core.celery_app beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    command: celery -A backend.core.celery_app beat --loglevel=info
     volumes:
       - ./backend:/app/backend
     env_file:

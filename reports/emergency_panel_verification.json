@@ -1,0 +1,181 @@
+{
+  "report_generated": "2025-09-01 11:03:50",
+  "verifier_version": "1.0.0",
+  "python_version": "3.12",
+  "verification_time": 0.011342048645019531,
+  "files_analyzed": [
+    {
+      "filename": "index.html",
+      "type": "main",
+      "analysis": {
+        "path": "/workspaces/ZeroDev_AI/emergency-panel-app/index.html",
+        "size": 1093,
+        "hash": "142aec95dc9ef55dddcedf40edaa920d43711531e97f87989c187e5b6e2c142f",
+        "mime_type": "text/html",
+        "encoding": "utf-8",
+        "lines": 31,
+        "valid": true,
+        "errors": [],
+        "warnings": [],
+        "metadata": {
+          "tags_count": 19,
+          "unique_tags": 14,
+          "scripts": [
+            "script.js"
+          ],
+          "styles": [
+            "styles.css"
+          ],
+          "links": []
+        }
+      },
+      "security": {
+        "file_path": "/workspaces/ZeroDev_AI/emergency-panel-app/index.html",
+        "vulnerabilities": [],
+        "security_score": 100,
+        "recommendations": [
+          "Implement Content Security Policy (CSP) headers",
+          "Validate all user inputs",
+          "Use HTTPS for external resources"
+        ]
+      }
+    },
+    {
+      "filename": "index_enhanced.html",
+      "type": "enhanced",
+      "analysis": {
+        "path": "/workspaces/ZeroDev_AI/emergency-panel-app/index_enhanced.html",
+        "size": 4009,
+        "hash": "074e368cd6ae341c469cc39109960bc80c64a6465bec18e8bd4a9441ad54a72b",
+        "mime_type": "text/html",
+        "encoding": "utf-8",
+        "lines": 111,
+        "valid": true,
+        "errors": [],
+        "warnings": [],
+        "metadata": {
+          "tags_count": 44,
+          "unique_tags": 19,
+          "scripts": [
+            "script_enhanced.js"
+          ],
+          "styles": [
+            "styles.css"
+          ],
+          "links": []
+        }
+      },
+      "security": {
+        "file_path": "/workspaces/ZeroDev_AI/emergency-panel-app/index_enhanced.html",
+        "vulnerabilities": [],
+        "security_score": 100,
+        "recommendations": [
+          "Implement Content Security Policy (CSP) headers",
+          "Validate all user inputs",
+          "Use HTTPS for external resources"
+        ]
+      }
+    },
+    {
+      "filename": "script.js",
+      "type": "main_script",
+      "analysis": {
+        "path": "/workspaces/ZeroDev_AI/emergency-panel-app/script.js",
+        "size": 2223,
+        "hash": "da7a6339ce1ae0ee959b537860e4e184e507c1825e6242468ff1350537b8364c",
+        "mime_type": "application/javascript",
+        "encoding": "utf-8",
+        "lines": 60,
+        "valid": true,
+        "errors": [],
+        "warnings": [],
+        "metadata": {
+          "function_count": 0,
+          "variable_count": 11,
+          "minified": false
+        }
+      },
+      "security": {
+        "file_path": "/workspaces/ZeroDev_AI/emergency-panel-app/script.js",
+        "vulnerabilities": [],
+        "security_score": 100,
+        "recommendations": [
+          "Minify JavaScript in production",
+          "Remove console.log statements",
+          "Avoid eval() and similar dangerous functions"
+        ]
+      }
+    },
+    {
+      "filename": "script-enhanced.js",
+      "type": "enhanced_script",
+      "analysis": {
+        "path": "/workspaces/ZeroDev_AI/emergency-panel-app/script-enhanced.js",
+        "size": 5384,
+        "hash": "237f198d74773acdc5e0e20356826dd41c49c4b4cca7b8ff528147c2f82fd62c",
+        "mime_type": "application/javascript",
+        "encoding": "utf-8",
+        "lines": 137,
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "innerHTML assignment can lead to XSS - Found 2 occurrences"
+        ],
+        "metadata": {
+          "function_count": 0,
+          "variable_count": 27,
+          "minified": false
+        }
+      },
+      "security": {
+        "file_path": "/workspaces/ZeroDev_AI/emergency-panel-app/script-enhanced.js",
+        "vulnerabilities": [
+          "innerHTML assignment can lead to XSS - Found 2 occurrences"
+        ],
+        "security_score": 90,
+        "recommendations": [
+          "Minify JavaScript in production",
+          "Remove console.log statements",
+          "Avoid eval() and similar dangerous functions"
+        ]
+      }
+    },
+    {
+      "filename": "styles.css",
+      "type": "styles",
+      "analysis": {
+        "path": "/workspaces/ZeroDev_AI/emergency-panel-app/styles.css",
+        "size": 1794,
+        "hash": "4248106d2a211d77bd9a852af9ab3bd32e0d7b86b787272b4e30d16e56736dc8",
+        "mime_type": "text/css",
+        "encoding": "utf-8",
+        "lines": 105,
+        "valid": true,
+        "errors": [],
+        "warnings": [],
+        "metadata": {
+          "selector_count": 16,
+          "property_count": 58,
+          "minified": false
+        }
+      },
+      "security": {
+        "file_path": "/workspaces/ZeroDev_AI/emergency-panel-app/styles.css",
+        "vulnerabilities": [],
+        "security_score": 100,
+        "recommendations": []
+      }
+    }
+  ],
+  "security_report": [],
+  "performance_metrics": {
+    "total_expected_files": 5,
+    "files_found": 5,
+    "completion_percentage": 100.0,
+    "total_size_bytes": 14503
+  },
+  "overall_status": "passed",
+  "recommendations": [
+    "innerHTML assignment can lead to XSS - Found 2 occurrences"
+  ]
+}

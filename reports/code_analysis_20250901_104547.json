@@ -1,0 +1,20 @@
+{
+  "timestamp": "2025-09-01T10:45:47.734635",
+  "project_path": "/workspaces/ZeroDev_AI",
+  "total_files": 116,
+  "issues_found": [
+    {
+      "file_path": "backend/core/redis_old.py",
+      "line_number": 19,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "expected 'except' or 'finally' block  [syntax]",
+      "suggested_fix": null
+    }
+  ],
+  "fixes_applied": [],
+  "security_score": 100,
+  "performance_score": 100,
+  "maintainability_score": 95,
+  "recommendations": []
+}

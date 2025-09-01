@@ -1,0 +1,265 @@
+{
+  "timestamp": "2025-09-01T11:03:52.376740",
+  "total_files": 3163,
+  "total_size": 72957910,
+  "file_types": {
+    "code": {
+      "count": 200,
+      "size": 671040
+    },
+    "docs": {
+      "count": 24,
+      "size": 199226
+    },
+    "config": {
+      "count": 2914,
+      "size": 71922870
+    },
+    "other": {
+      "count": 18,
+      "size": 139870
+    },
+    "images": {
+      "count": 7,
+      "size": 24904
+    }
+  },
+  "exact_duplicates": [
+    {
+      "hash_key": "a2f9fa6b0381259531ae9301ef221bf963906f969761e341af5829b8678a0dfe",
+      "files": [
+        {
+          "path": "backend/core/redis.py",
+          "size": 708,
+          "hash_md5": "018adb5f869a1e7fa3362acd836af48b",
+          "hash_sha256": "a2f9fa6b0381259531ae9301ef221bf963906f969761e341af5829b8678a0dfe",
+          "modified_time": 1755605309.5985193,
+          "content_hash": "e157f7199ce8e1d9bc8b0985357c59e8",
+          "file_type": "code",
+          "lines_count": 32
+        },
+        {
+          "path": "backend/core/redis_new.py",
+          "size": 708,
+          "hash_md5": "018adb5f869a1e7fa3362acd836af48b",
+          "hash_sha256": "a2f9fa6b0381259531ae9301ef221bf963906f969761e341af5829b8678a0dfe",
+          "modified_time": 1755605309.5985193,
+          "content_hash": "e157f7199ce8e1d9bc8b0985357c59e8",
+          "file_type": "code",
+          "lines_count": 32
+        }
+      ],
+      "duplicate_type": "exact",
+      "similarity_score": 1.0,
+      "recommended_action": "Keep 'backend/core/redis.py', remove others"
+    },
+    {
+      "hash_key": "f85f8d1eab491cc5155426fb4ae7ae90bfc0b091089993e9ccf0b5e9b6f2e41f",
+      "files": [
+        {
+          "path": "frontend/src/app/(admin)/layout.tsx",
+          "size": 1430,
+          "hash_md5": "e0a8a2e9fdcf1818e900052e9f7c7bf7",
+          "hash_sha256": "f85f8d1eab491cc5155426fb4ae7ae90bfc0b091089993e9ccf0b5e9b6f2e41f",
+          "modified_time": 1755605309.5465193,
+          "content_hash": "2720fbb9fc56ec9f36bb98ee3523806c",
+          "file_type": "code",
+          "lines_count": 39
+        },
+        {
+          "path": "frontend/src/app/admin/layout.tsx",
+          "size": 1430,
+          "hash_md5": "e0a8a2e9fdcf1818e900052e9f7c7bf7",
+          "hash_sha256": "f85f8d1eab491cc5155426fb4ae7ae90bfc0b091089993e9ccf0b5e9b6f2e41f",
+          "modified_time": 1755595523.5647163,
+          "content_hash": "2720fbb9fc56ec9f36bb98ee3523806c",
+          "file_type": "code",
+          "lines_count": 39
+        }
+      ],
+      "duplicate_type": "exact",
+      "similarity_score": 1.0,
+      "recommended_action": "Keep 'frontend/src/app/(admin)/layout.tsx', remove others"
+    },
+    {
+      "hash_key": "383fbf219e91f876a87d89361ac8a9b3ecc137113f989757deb16a3f947a1b31",
+      "files": [
+        {
+          "path": "frontend/jules-scratch/verification/initial_page.png",
+          "size": 10795,
+          "hash_md5": "cab8fe441953892577323abd94db2995",
+          "hash_sha256": "383fbf219e91f876a87d89361ac8a9b3ecc137113f989757deb16a3f947a1b31",
+          "modified_time": 1755508511.6678033,
+          "content_hash": "e0e8253c5ecfacfa624696fb12065ca9",
+          "file_type": "images",
+          "lines_count": 26
+        },
+        {
+          "path": "frontend/jules-scratch/verification/error.png",
+          "size": 10795,
+          "hash_md5": "cab8fe441953892577323abd94db2995",
+          "hash_sha256": "383fbf219e91f876a87d89361ac8a9b3ecc137113f989757deb16a3f947a1b31",
+          "modified_time": 1755508511.6678033,
+          "content_hash": "e0e8253c5ecfacfa624696fb12065ca9",
+          "file_type": "images",
+          "lines_count": 26
+        }
+      ],
+      "duplicate_type": "exact",
+      "similarity_score": 1.0,
+      "recommended_action": "Keep 'frontend/jules-scratch/verification/initial_page.png', remove others"
+    }
+  ],
+  "content_duplicates": [
+    {
+      "hash_key": "d41d8cd98f00b204e9800998ecf8427e",
+      "files": [
+        {
+          "path": "frontend/next-env.d.ts",
+          "size": 228,
+          "hash_md5": "b5ed9dd8b4c5ba8e5ab8e6a379c15838",
+          "hash_sha256": "9dd9d642cdb87d4d5b3173217e0c45429b3e47a6f5cf5fb0ead6c644ec5fed01",
+          "modified_time": 1755596112.9827125,
+          "content_hash": "d41d8cd98f00b204e9800998ecf8427e",
+          "file_type": "code",
+          "lines_count": 5
+        },
+        {
+          "path": "backend/api/__init__.py",
+          "size": 0,
+          "hash_md5": "d41d8cd98f00b204e9800998ecf8427e",
+          "hash_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "modified_time": 1755508511.6588032,
+          "content_hash": "d41d8cd98f00b204e9800998ecf8427e",
+          "file_type": "code",
+          "lines_count": 0
+        },
+        {
+          "path": "backend/tasks/__init__.py",
+          "size": 0,
+          "hash_md5": "d41d8cd98f00b204e9800998ecf8427e",
+          "hash_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "modified_time": 1755508511.6648033,
+          "content_hash": "d41d8cd98f00b204e9800998ecf8427e",
+          "file_type": "code",
+          "lines_count": 0
+        },
+        {
+          "path": "backend/agents/__init__.py",
+          "size": 1,
+          "hash_md5": "68b329da9893e34099c7d8ad5cb9c940",
+          "hash_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+          "modified_time": 1755508511.6588032,
+          "content_hash": "d41d8cd98f00b204e9800998ecf8427e",
+          "file_type": "code",
+          "lines_count": 1
+        },
+        {
+          "path": "backend/transformation/__init__.py",
+          "size": 81,
+          "hash_md5": "b0c896e12e02f6f78895c39385c21483",
+          "hash_sha256": "f489a44a8dba6bc3c698a5097af156f389ca5e433446791dd914c11a5e309abf",
+          "modified_time": 1755508511.6658034,
+          "content_hash": "d41d8cd98f00b204e9800998ecf8427e",
+          "file_type": "code",
+          "lines_count": 1
+        },
+        {
+          "path": "backend/security_engine/__init__.py",
+          "size": 0,
+          "hash_md5": "d41d8cd98f00b204e9800998ecf8427e",
+          "hash_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "modified_time": 1755581219.9099507,
+          "content_hash": "d41d8cd98f00b204e9800998ecf8427e",
+          "file_type": "code",
+          "lines_count": 0
+        }
+      ],
+      "duplicate_type": "content",
+      "similarity_score": 0.95,
+      "recommended_action": "Keep 'frontend/next-env.d.ts', review others"
+    },
+    {
+      "hash_key": "e157f7199ce8e1d9bc8b0985357c59e8",
+      "files": [
+        {
+          "path": "backend/core/redis.py",
+          "size": 708,
+          "hash_md5": "018adb5f869a1e7fa3362acd836af48b",
+          "hash_sha256": "a2f9fa6b0381259531ae9301ef221bf963906f969761e341af5829b8678a0dfe",
+          "modified_time": 1755605309.5985193,
+          "content_hash": "e157f7199ce8e1d9bc8b0985357c59e8",
+          "file_type": "code",
+          "lines_count": 32
+        },
+        {
+          "path": "backend/core/redis_new.py",
+          "size": 708,
+          "hash_md5": "018adb5f869a1e7fa3362acd836af48b",
+          "hash_sha256": "a2f9fa6b0381259531ae9301ef221bf963906f969761e341af5829b8678a0dfe",
+          "modified_time": 1755605309.5985193,
+          "content_hash": "e157f7199ce8e1d9bc8b0985357c59e8",
+          "file_type": "code",
+          "lines_count": 32
+        }
+      ],
+      "duplicate_type": "content",
+      "similarity_score": 0.95,
+      "recommended_action": "Keep 'backend/core/redis.py', review others"
+    },
+    {
+      "hash_key": "2720fbb9fc56ec9f36bb98ee3523806c",
+      "files": [
+        {
+          "path": "frontend/src/app/admin/layout.tsx",
+          "size": 1430,
+          "hash_md5": "e0a8a2e9fdcf1818e900052e9f7c7bf7",
+          "hash_sha256": "f85f8d1eab491cc5155426fb4ae7ae90bfc0b091089993e9ccf0b5e9b6f2e41f",
+          "modified_time": 1755595523.5647163,
+          "content_hash": "2720fbb9fc56ec9f36bb98ee3523806c",
+          "file_type": "code",
+          "lines_count": 39
+        },
+        {
+          "path": "frontend/src/app/(admin)/layout.tsx",
+          "size": 1430,
+          "hash_md5": "e0a8a2e9fdcf1818e900052e9f7c7bf7",
+          "hash_sha256": "f85f8d1eab491cc5155426fb4ae7ae90bfc0b091089993e9ccf0b5e9b6f2e41f",
+          "modified_time": 1755605309.5465193,
+          "content_hash": "2720fbb9fc56ec9f36bb98ee3523806c",
+          "file_type": "code",
+          "lines_count": 39
+        }
+      ],
+      "duplicate_type": "content",
+      "similarity_score": 0.95,
+      "recommended_action": "Keep 'frontend/src/app/admin/layout.tsx', review others"
+    }
+  ],
+  "similar_files": [
+    {
+      "file1": "backend/core/redis.py",
+      "file2": "backend/core/redis_new.py",
+      "similarity": 1.0,
+      "common_lines": 1,
+      "differences": []
+    },
+    {
+      "file1": "frontend/src/app/admin/layout.tsx",
+      "file2": "frontend/src/app/(admin)/layout.tsx",
+      "similarity": 1.0,
+      "common_lines": 1,
+      "differences": []
+    }
+  ],
+  "recommendations": [
+    "Found 3 groups of exact duplicates - safe to remove",
+    "Found 3 groups of content duplicates - review before removing",
+    "Found 2 pairs of similar files - consider refactoring"
+  ],
+  "potential_savings": {
+    "exact_duplicates_bytes": 12933,
+    "content_duplicates_bytes": 2220,
+    "total_bytes": 15153
+  }
+}

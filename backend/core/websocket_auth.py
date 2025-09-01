@@ -19,41 +19,36 @@ logger = logging.getLogger(__name__)
 
 async def get_current_user_ws(token: str) -> Optional[User]:
     """
-    Validate JWT token for WebSocket connections
-    Returns User object if valid, None otherwise
+    Authenticate WebSocket connections using JWT tokens
     """
     try:
-        if not token:
-            return None
-        
-        # Remove 'Bearer ' prefix if present
-        if token.startswith('Bearer '):
-            token = token[7:]
-        
         # Decode JWT token
         payload = jwt.decode(
             token, 
-            settings.JWT_SECRET_KEY, 
-            algorithms=[settings.JWT_ALGORITHM]
+            settings.JWT_SECRET, 
+            algorithms=["HS256"]
         )
         
-        user_id: str = payload.get("sub")
-        if user_id is None:
+        user_id = payload.get("sub")
+        if not user_id:
+            logger.warning("No user ID found in JWT token")
             return None
         
-        # Get user from database
-        db = next(get_db())
-        try:
-            user = db.query(User).filter(User.id == user_id).first()
-            return user
-        finally:
-            db.close()
+        # Get database session and fetch user
+        with next(get_db()) as session:
+            user = session.query(User).filter(User.id == user_id).first()
             
+        if not user or not user.is_active:
+            logger.warning(f"User not found or inactive: {user_id}")
+            return None
+            
+        return user
+        
     except JWTError as e:
-        logger.warning(f"JWT validation error for WebSocket: {e}")
+        logger.error(f"JWT validation failed: {e}")
         return None
     except Exception as e:
-        logger.error(f"WebSocket auth error: {e}")
+        logger.error(f"WebSocket authentication error: {e}")
         return None
 
 async def validate_websocket_token(token: str) -> dict:

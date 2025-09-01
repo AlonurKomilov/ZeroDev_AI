@@ -80,9 +80,36 @@ async def get_owner_emergency_key(api_key: str = Depends(emergency_api_key_heade
     return api_key
 
 
-async def get_current_user_ws(websocket, token: str = None):
+async def get_current_user_ws(token: str) -> Optional[User]:
     """
-    Mock authentication for WebSocket connections
+    Real authentication for WebSocket connections using JWT tokens
     """
-    # For now, return a mock user
-    return User(id=uuid.uuid4(), email="test@example.com")
+    try:
+        from jose import JWTError, jwt
+        from backend.core.database import get_session
+        from sqlmodel import select
+        
+        # Decode the JWT token
+        payload = jwt.decode(
+            token, 
+            settings.JWT_SECRET, 
+            algorithms=["HS256"]
+        )
+        user_id = payload.get("sub")
+        
+        if user_id is None:
+            return None
+            
+        # Get user from database
+        session = next(get_session())
+        statement = select(User).where(User.id == user_id)
+        user = session.exec(statement).first()
+        
+        return user
+        
+    except (JWTError, Exception) as e:
+        # Log the error but don't expose details
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.warning(f"WebSocket authentication failed: {str(e)}")
+        return None
