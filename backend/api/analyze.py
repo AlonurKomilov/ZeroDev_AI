@@ -36,7 +36,9 @@ def classify_prompt_type(prompt: str) -> str:
     return "general"
 
 
-async def get_ai_suggestions(prompt: str, violation: dict, model_name: str) -> list[str]:
+async def get_ai_suggestions(
+    prompt: str, violation: dict, model_name: str
+) -> list[str]:
     """Generates helpful suggestions for a flagged prompt using an AI model."""
     adapter = get_llm_adapter(model_name)
     keyword = violation.get("word") or violation.get("pattern", "")
@@ -64,7 +66,7 @@ async def get_ai_suggestions(prompt: str, violation: dict, model_name: str) -> l
             ],
             response_format={"type": "json_object"},
         )
-        response_data = json.loads(completion['choices'][0]['message']['content'])
+        response_data = json.loads(completion["choices"][0]["message"]["content"])
         return response_data.get("suggestions", [])
     except Exception as e:
         log.error(f"Could not generate AI suggestions: {e}", exc_info=True)

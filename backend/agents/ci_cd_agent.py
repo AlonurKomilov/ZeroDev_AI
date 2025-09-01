@@ -1,6 +1,7 @@
 import os
 from datetime import datetime
 
+
 def create_ci_cd_files(project_path: str, project_name: str):
     print(f"[+] Generating CI/CD files for project: {project_name}")
 
@@ -15,26 +16,33 @@ def create_ci_cd_files(project_path: str, project_name: str):
     # LICENSE
     year = datetime.now().year
     with open(os.path.join(project_path, "LICENSE"), "w") as f:
-        f.write(f"""MIT License
+        f.write(
+            f"""MIT License
 
 Copyright (c) {year} ZeroDev
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-""")
+"""
+        )
 
     # CHANGELOG
     with open(os.path.join(project_path, "CHANGELOG.md"), "w") as f:
-        f.write(f"# Changelog\n\n## {datetime.today().strftime('%Y-%m-%d')}\n- Initial project generated\n")
+        f.write(
+            f"# Changelog\n\n## {datetime.today().strftime('%Y-%m-%d')}\n- Initial project generated\n"
+        )
 
     # Test file
     with open(os.path.join(project_path, "tests", "test_main.py"), "w") as f:
-        f.write("""def test_basic():
+        f.write(
+            """def test_basic():
     assert True
-""")
+"""
+        )
 
     # CI workflow
     with open(os.path.join(project_path, ".github", "workflows", "test.yml"), "w") as f:
-        f.write(f"""name: Test + Lint + Coverage
+        f.write(
+            """name: Test + Lint + Coverage
 
 on:
   push:
@@ -64,7 +72,8 @@ jobs:
       run: |
         coverage run -m pytest
         coverage report
-""")
+"""
+        )
 
     # .env.sample
     with open(os.path.join(project_path, "env.sample"), "w") as f:
@@ -72,16 +81,19 @@ jobs:
 
     # config/validate_env.py
     with open(os.path.join(project_path, "config", "validate_env.py"), "w") as f:
-        f.write("""import os
+        f.write(
+            """import os
 
 def validate_env():
     if not os.getenv("OPENAI_API_KEY"):
         raise EnvironmentError("Missing OPENAI_API_KEY environment variable!")
-""")
+"""
+        )
 
     # pre-commit
     with open(os.path.join(project_path, ".pre-commit-config.yaml"), "w") as f:
-        f.write("""repos:
+        f.write(
+            """repos:
   - repo: https://github.com/psf/black
     rev: 23.3.0
     hooks:
@@ -90,21 +102,25 @@ def validate_env():
     rev: 6.0.0
     hooks:
       - id: flake8
-""")
+"""
+        )
 
     # Dockerfile
     with open(os.path.join(project_path, "Dockerfile"), "w") as f:
-        f.write(f"""FROM python:3.10
+        f.write(
+            """FROM python:3.10
 
 WORKDIR /app
 COPY . .
 RUN pip install --no-cache-dir -r requirements.txt
 CMD ["python", "main.py"]
-""")
+"""
+        )
 
     # docker-compose.yml
     with open(os.path.join(project_path, "docker-compose.yml"), "w") as f:
-        f.write(f"""version: '3.8'
+        f.write(
+            """version: '3.8'
 services:
   app:
     build: .
@@ -114,6 +130,7 @@ services:
       - .:/app
     environment:
       - OPENAI_API_KEY=your-api-key-here
-""")
+"""
+        )
 
     print("[✅] CI/CD scaffolding created successfully.")

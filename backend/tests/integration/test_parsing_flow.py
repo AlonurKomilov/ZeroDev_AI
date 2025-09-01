@@ -1,14 +1,14 @@
-import pytest
-import time
 import json
-from fastapi.testclient import TestClient
-from unittest.mock import MagicMock, AsyncMock
+import time
+from unittest.mock import AsyncMock, MagicMock
 
-from backend.main import app
-from backend.core import ai_router
-
+import pytest
 import redis
+from backend.core import ai_router
 from backend.core.settings import settings
+from backend.main import app
+from fastapi.testclient import TestClient
+
 
 # Helper to check for Redis availability before running integration tests
 def is_redis_available():
@@ -18,12 +18,13 @@ def is_redis_available():
             host=settings.REDIS_HOST,
             port=settings.REDIS_PORT,
             db=settings.REDIS_DB,
-            socket_connect_timeout=1 # Quick timeout
+            socket_connect_timeout=1,  # Quick timeout
         )
         r.ping()
         return True
     except redis.exceptions.ConnectionError:
         return False
+
 
 @pytest.mark.integration
 @pytest.mark.skipif(not is_redis_available(), reason="Redis server is not available")
@@ -37,7 +38,11 @@ def test_parsing_flow_e2e(monkeypatch):
     This test requires a running Redis instance for the Celery broker and result backend.
     """
     # 1. Mock the AI Router to avoid real LLM calls and return a predictable result
-    mock_spec = {"project_name": "test-project", "description": "A test project", "targets": ["target1"]}
+    mock_spec = {
+        "project_name": "test-project",
+        "description": "A test project",
+        "targets": ["target1"],
+    }
 
     # The mock response should mimic the structure of the adapter's return value
     mock_completion_result = {
@@ -47,15 +52,21 @@ def test_parsing_flow_e2e(monkeypatch):
     # Create a mock adapter instance
     mock_adapter_instance = MagicMock()
     # The chat_completion method should be an async mock
-    mock_adapter_instance.chat_completion = AsyncMock(return_value=mock_completion_result)
+    mock_adapter_instance.chat_completion = AsyncMock(
+        return_value=mock_completion_result
+    )
 
     # Monkeypatch the get_llm_adapter function to return our mock instance
-    monkeypatch.setattr(ai_router, "get_llm_adapter", lambda model_name: mock_adapter_instance)
+    monkeypatch.setattr(
+        ai_router, "get_llm_adapter", lambda model_name: mock_adapter_instance
+    )
 
     client = TestClient(app)
 
     # 2. Call the /parse endpoint to start the task
-    response = client.post("/parse", json={"prompt": "test prompt", "model_name": "gpt-4o-mini"})
+    response = client.post(
+        "/parse", json={"prompt": "test prompt", "model_name": "gpt-4o-mini"}
+    )
     assert response.status_code == 202
     task_id = response.json().get("task_id")
     assert task_id
@@ -70,11 +81,13 @@ def test_parsing_flow_e2e(monkeypatch):
         final_response = response.json()
         if final_response["status"] in ["SUCCESS", "FAILURE"]:
             break
-        time.sleep(1) # Wait 1 second between polls
+        time.sleep(1)  # Wait 1 second between polls
 
     # 4. Assert the final state of the task
     assert final_response is not None, "Polling for task result timed out."
-    assert final_response["status"] == "SUCCESS", f"Task failed with result: {final_response.get('result')}"
+    assert (
+        final_response["status"] == "SUCCESS"
+    ), f"Task failed with result: {final_response.get('result')}"
 
     # The result of the task should be the dictionary version of the spec
     assert final_response["result"] == mock_spec

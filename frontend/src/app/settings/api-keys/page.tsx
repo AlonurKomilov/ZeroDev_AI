@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { authService } from "@/lib/auth";
 
 // Define the type for an API key
 type ApiKey = {
@@ -11,41 +12,74 @@ type ApiKey = {
   created_at: string;
 };
 
-// --- Mock API Functions ---
-// In a real app, these would be in a dedicated API service file.
+// --- Real API Functions ---
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
 
-const fetchApiKeys = async (): Promise<ApiKey[]> => {
-  console.log("Fetching API keys...");
-  // const res = await fetch("/api/keys");
-  // if (!res.ok) throw new Error("Failed to fetch keys");
-  // return res.json();
-  return Promise.resolve([
-    { id: "1", service_name: "OpenAI", display_key: "sk-....-xxxx", created_at: new Date().toISOString() },
-    { id: "2", service_name: "Anthropic", display_key: "sk-....-yyyy", created_at: new Date().toISOString() },
-  ]);
-};
-
-const addApiKey = async ({ service, key }: { service: string; key: string }): Promise<ApiKey> => {
-  console.log("Adding API key:", { service, key });
-  // const res = await fetch("/api/keys", {
-  //   method: "POST",
-  //   headers: { "Content-Type": "application/json" },
-  //   body: JSON.stringify({ service_name: service, api_key: key }),
-  // });
-  // if (!res.ok) throw new Error("Failed to add key");
-  // return res.json();
-  return Promise.resolve({
-      id: Math.random().toString(),
-      service_name: service,
-      display_key: `new-....-${Math.random().toString(36).substring(8)}`,
-      created_at: new Date().toISOString()
+const fetchApiKeys = async (): Promise<string[]> => {
+  const token = authService.getToken();
+  if (!token) throw new Error("Not authenticated");
+  
+  const res = await fetch(`${API_BASE_URL}/api/keys`, {
+    headers: { 
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json"
+    }
   });
+  
+  if (!res.ok) {
+    if (res.status === 401) {
+      authService.logout();
+      window.location.href = '/login';
+    }
+    throw new Error("Failed to fetch API keys");
+  }
+  
+  return res.json();
 };
 
-const deleteApiKey = async (id: string): Promise<void> => {
-  console.log("Deleting API key:", id);
-  // const res = await fetch(`/api/keys/${id}`, { method: "DELETE" });
-  // if (!res.ok) throw new Error("Failed to delete key");
+const addApiKey = async ({ service, key }: { service: string; key: string }): Promise<{message: string}> => {
+  const token = authService.getToken();
+  if (!token) throw new Error("Not authenticated");
+  
+  const res = await fetch(`${API_BASE_URL}/api/keys`, {
+    method: "POST",
+    headers: { 
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
+    body: JSON.stringify({ service_name: service, api_key: key }),
+  });
+  
+  if (!res.ok) {
+    if (res.status === 401) {
+      authService.logout();
+      window.location.href = '/login';
+    }
+    throw new Error("Failed to add API key");
+  }
+  
+  return res.json();
+};
+
+const deleteApiKey = async (serviceName: string): Promise<void> => {
+  const token = authService.getToken();
+  if (!token) throw new Error("Not authenticated");
+  
+  const res = await fetch(`${API_BASE_URL}/api/keys/${serviceName}`, { 
+    method: "DELETE",
+    headers: { 
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json"
+    }
+  });
+  
+  if (!res.ok) {
+    if (res.status === 401) {
+      authService.logout();
+      window.location.href = '/login';
+    }
+    throw new Error("Failed to delete API key");
+  }
 };
 
 // --- Component ---
@@ -55,7 +89,7 @@ export default function ApiKeysPage() {
   const [newService, setNewService] = useState("");
   const [newKey, setNewKey] = useState("");
 
-  const { data: keys, isLoading, isError } = useQuery<ApiKey[]>({
+  const { data: serviceNames, isLoading, isError, error } = useQuery<string[]>({
     queryKey: ["apiKeys"],
     queryFn: fetchApiKeys,
   });
@@ -67,6 +101,9 @@ export default function ApiKeysPage() {
       setNewService("");
       setNewKey("");
     },
+    onError: (error) => {
+      alert(`Failed to add API key: ${error.message}`);
+    }
   });
 
   const deleteMutation = useMutation({
@@ -74,6 +111,9 @@ export default function ApiKeysPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["apiKeys"] });
     },
+    onError: (error) => {
+      alert(`Failed to delete API key: ${error.message}`);
+    }
   });
 
   const handleAddKey = (e: React.FormEvent) => {
@@ -122,23 +162,26 @@ export default function ApiKeysPage() {
       <div className="space-y-4">
         <h3 className="font-semibold text-lg">Your Keys</h3>
         {isLoading && <p>Loading keys...</p>}
-        {isError && <p className="text-red-500">Failed to load keys.</p>}
-        {keys?.map((key) => (
-          <div key={key.id} className="flex justify-between items-center p-3 border rounded-md dark:border-gray-700">
-            <div>
-              <p className="font-semibold">{key.service_name}</p>
-              <p className="text-sm text-gray-500 font-mono">{key.display_key}</p>
+        {isError && <p className="text-red-500">Failed to load keys: {error?.message}</p>}
+        {serviceNames && serviceNames.length > 0 ? (
+          serviceNames.map((serviceName) => (
+            <div key={serviceName} className="flex justify-between items-center p-3 border rounded-md dark:border-gray-700">
+              <div>
+                <p className="font-semibold">{serviceName}</p>
+                <p className="text-sm text-gray-500 font-mono">sk-****-{serviceName.toLowerCase()}</p>
+              </div>
+              <button
+                onClick={() => deleteMutation.mutate(serviceName)}
+                disabled={deleteMutation.isPending && deleteMutation.variables === serviceName}
+                className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 disabled:bg-gray-400 text-sm"
+              >
+                {deleteMutation.isPending && deleteMutation.variables === serviceName ? "Deleting..." : "Delete"}
+              </button>
             </div>
-            <button
-              onClick={() => deleteMutation.mutate(key.id)}
-              disabled={deleteMutation.isPending && deleteMutation.variables === key.id}
-              className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 disabled:bg-gray-400 text-sm"
-            >
-              Delete
-            </button>
-          </div>
-        ))}
-         {keys && keys.length === 0 && <p className="text-gray-500">You haven&apos;t added any API keys yet.</p>}
+          ))
+        ) : (
+          serviceNames && <p className="text-gray-500">You haven&apos;t added any API keys yet.</p>
+        )}
       </div>
     </div>
   );

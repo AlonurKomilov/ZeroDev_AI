@@ -1,0 +1,476 @@
+{
+  "timestamp": "2025-09-01T11:01:26.204500",
+  "project_path": "/workspaces/ZeroDev_AI/tools",
+  "total_files": 5,
+  "issues_found": [
+    {
+      "file_path": "master_tool_manager.py",
+      "line_number": 44,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Incompatible default for argument \"tool_args\" (default has type \"None\", argument has type \"list[str]\")  [assignment]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_port_manager.py",
+      "line_number": 176,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Need type annotation for \"results\"  [var-annotated]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_emergency_verifier.py",
+      "line_number": 114,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Need type annotation for \"results\" (hint: \"results: dict[<type>, <type>] = ...\")  [var-annotated]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_emergency_verifier.py",
+      "line_number": 115,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Need type annotation for \"security_issues\" (hint: \"security_issues: list[<type>] = ...\")  [var-annotated]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_emergency_verifier.py",
+      "line_number": 116,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Need type annotation for \"performance_metrics\" (hint: \"performance_metrics: dict[<type>, <type>] = ...\")  [var-annotated]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_emergency_verifier.py",
+      "line_number": 226,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Need type annotation for \"errors\" (hint: \"errors: list[<type>] = ...\")  [var-annotated]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_emergency_verifier.py",
+      "line_number": 299,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Need type annotation for \"errors\" (hint: \"errors: list[<type>] = ...\")  [var-annotated]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_emergency_verifier.py",
+      "line_number": 410,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Need type annotation for \"results\"  [var-annotated]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_emergency_verifier.py",
+      "line_number": 454,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Item \"str\" of \"str | dict[Any, Any] | list[Any] | None\" has no attribute \"append\"  [union-attr]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_emergency_verifier.py",
+      "line_number": 454,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Item \"dict[Any, Any]\" of \"str | dict[Any, Any] | list[Any] | None\" has no attribute \"append\"  [union-attr]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_emergency_verifier.py",
+      "line_number": 454,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Item \"None\" of \"str | dict[Any, Any] | list[Any] | None\" has no attribute \"append\"  [union-attr]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_emergency_verifier.py",
+      "line_number": 463,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Item \"str\" of \"str | dict[Any, Any] | list[Any] | None\" has no attribute \"append\"  [union-attr]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_emergency_verifier.py",
+      "line_number": 463,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Item \"dict[Any, Any]\" of \"str | dict[Any, Any] | list[Any] | None\" has no attribute \"append\"  [union-attr]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_emergency_verifier.py",
+      "line_number": 463,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Item \"None\" of \"str | dict[Any, Any] | list[Any] | None\" has no attribute \"append\"  [union-attr]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_emergency_verifier.py",
+      "line_number": 473,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Item \"None\" of \"str | dict[Any, Any] | list[Any] | None\" has no attribute \"__iter__\" (not iterable)  [union-attr]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_emergency_verifier.py",
+      "line_number": 473,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Item \"str\" of \"str | Any\" has no attribute \"get\"  [union-attr]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_emergency_verifier.py",
+      "line_number": 480,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Generator has incompatible item type \"str | Any\"; expected \"bool\"  [misc]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_emergency_verifier.py",
+      "line_number": 480,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Invalid index type \"str\" for \"str\"; expected type \"SupportsIndex | slice[Any, Any, Any]\"  [index]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_emergency_verifier.py",
+      "line_number": 480,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Item \"None\" of \"str | dict[Any, Any] | list[Any] | None\" has no attribute \"__iter__\" (not iterable)  [union-attr]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_emergency_verifier.py",
+      "line_number": 481,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Item \"str\" of \"str | Any\" has no attribute \"get\"  [union-attr]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_emergency_verifier.py",
+      "line_number": 488,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Invalid index type \"str\" for \"str\"; expected type \"SupportsIndex | slice[Any, Any, Any]\"  [index]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_emergency_verifier.py",
+      "line_number": 488,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Item \"None\" of \"str | dict[Any, Any] | list[Any] | None\" has no attribute \"__iter__\" (not iterable)  [union-attr]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_emergency_verifier.py",
+      "line_number": 489,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Item \"str\" of \"str | Any\" has no attribute \"get\"  [union-attr]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_emergency_verifier.py",
+      "line_number": 496,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Need type annotation for \"all_warnings\" (hint: \"all_warnings: list[<type>] = ...\")  [var-annotated]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_emergency_verifier.py",
+      "line_number": 497,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Item \"None\" of \"str | dict[Any, Any] | list[Any] | None\" has no attribute \"__iter__\" (not iterable)  [union-attr]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_emergency_verifier.py",
+      "line_number": 498,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Item \"str\" of \"str | Any\" has no attribute \"get\"  [union-attr]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_emergency_verifier.py",
+      "line_number": 499,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Invalid index type \"str\" for \"str\"; expected type \"SupportsIndex | slice[Any, Any, Any]\"  [index]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_emergency_verifier.py",
+      "line_number": 504,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Incompatible types in assignment (expression has type \"float\", target has type \"str | dict[Any, Any] | list[Any] | None\")  [assignment]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_emergency_verifier.py",
+      "line_number": 511,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Incompatible default for argument \"output_path\" (default has type \"None\", argument has type \"str\")  [assignment]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_emergency_verifier.py",
+      "line_number": 523,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Module \"os\" does not explicitly export attribute \"sys\"  [attr-defined]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_duplicate_cleaner.py",
+      "line_number": 331,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Need type annotation for \"type_counts\"  [var-annotated]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_duplicate_cleaner.py",
+      "line_number": 332,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Need type annotation for \"type_sizes\"  [var-annotated]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_duplicate_cleaner.py",
+      "line_number": 391,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Need type annotation for \"results\"  [var-annotated]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_duplicate_cleaner.py",
+      "line_number": 421,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Incompatible default for argument \"output_path\" (default has type \"None\", argument has type \"str\")  [assignment]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_ai_code_fixer.py",
+      "line_number": 130,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Incompatible default for argument \"api_key\" (default has type \"None\", argument has type \"str\")  [assignment]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_ai_code_fixer.py",
+      "line_number": 130,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Incompatible default for argument \"config_file\" (default has type \"None\", argument has type \"str\")  [assignment]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_ai_code_fixer.py",
+      "line_number": 184,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Incompatible types in assignment (expression has type \"CompletedProcess[bytes]\", variable has type \"CompletedProcess[str]\")  [assignment]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_ai_code_fixer.py",
+      "line_number": 228,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "List comprehension has incompatible type List[Sequence[Sequence[str]]]; expected List[str]  [misc]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_ai_code_fixer.py",
+      "line_number": 230,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Incompatible types in assignment (expression has type \"Sequence[Sequence[str]]\", variable has type \"str\")  [assignment]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_ai_code_fixer.py",
+      "line_number": 344,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Argument 1 to \"run_command_safely\" of \"ProfessionalCodeFixer\" has incompatible type \"Sequence[str]\"; expected \"list[str]\"  [arg-type]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_ai_code_fixer.py",
+      "line_number": 379,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Argument 1 to \"to_thread\" has incompatible type overloaded function; expected \"Callable[[Any, int, float, list[dict[str, str]]], Message]\"  [arg-type]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_ai_code_fixer.py",
+      "line_number": 386,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Item \"ThinkingBlock\" of \"TextBlock | ThinkingBlock | RedactedThinkingBlock | ToolUseBlock | ServerToolUseBlock | WebSearchToolResultBlock\" has no attribute \"text\"  [union-attr]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_ai_code_fixer.py",
+      "line_number": 386,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Item \"RedactedThinkingBlock\" of \"TextBlock | ThinkingBlock | RedactedThinkingBlock | ToolUseBlock | ServerToolUseBlock | WebSearchToolResultBlock\" has no attribute \"text\"  [union-attr]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_ai_code_fixer.py",
+      "line_number": 386,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Item \"ToolUseBlock\" of \"TextBlock | ThinkingBlock | RedactedThinkingBlock | ToolUseBlock | ServerToolUseBlock | WebSearchToolResultBlock\" has no attribute \"text\"  [union-attr]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_ai_code_fixer.py",
+      "line_number": 386,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Item \"ServerToolUseBlock\" of \"TextBlock | ThinkingBlock | RedactedThinkingBlock | ToolUseBlock | ServerToolUseBlock | WebSearchToolResultBlock\" has no attribute \"text\"  [union-attr]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_ai_code_fixer.py",
+      "line_number": 386,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Item \"WebSearchToolResultBlock\" of \"TextBlock | ThinkingBlock | RedactedThinkingBlock | ToolUseBlock | ServerToolUseBlock | WebSearchToolResultBlock\" has no attribute \"text\"  [union-attr]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_ai_code_fixer.py",
+      "line_number": 534,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Need type annotation for \"issue_counts\" (hint: \"issue_counts: dict[<type>, <type>] = ...\")  [var-annotated]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "professional_ai_code_fixer.py",
+      "line_number": 554,
+      "issue_type": "mypy",
+      "severity": "error",
+      "message": "Incompatible default for argument \"output_path\" (default has type \"None\", argument has type \"str\")  [assignment]",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "./master_tool_manager.py",
+      "line_number": 10,
+      "issue_type": "B404",
+      "severity": "low",
+      "message": "Consider possible security implications associated with the subprocess module.",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "./master_tool_manager.py",
+      "line_number": 67,
+      "issue_type": "B603",
+      "severity": "low",
+      "message": "subprocess call - check for execution of untrusted input.",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "./professional_ai_code_fixer.py",
+      "line_number": 12,
+      "issue_type": "B404",
+      "severity": "low",
+      "message": "Consider possible security implications associated with the subprocess module.",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "./professional_ai_code_fixer.py",
+      "line_number": 175,
+      "issue_type": "B603",
+      "severity": "low",
+      "message": "subprocess call - check for execution of untrusted input.",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "./professional_ai_code_fixer.py",
+      "line_number": 184,
+      "issue_type": "B603",
+      "severity": "low",
+      "message": "subprocess call - check for execution of untrusted input.",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "./professional_duplicate_cleaner.py",
+      "line_number": 113,
+      "issue_type": "B324",
+      "severity": "high",
+      "message": "Use of weak MD5 hash for security. Consider usedforsecurity=False",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "./professional_duplicate_cleaner.py",
+      "line_number": 116,
+      "issue_type": "B324",
+      "severity": "high",
+      "message": "Use of weak MD5 hash for security. Consider usedforsecurity=False",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "./professional_duplicate_cleaner.py",
+      "line_number": 160,
+      "issue_type": "B324",
+      "severity": "high",
+      "message": "Use of weak MD5 hash for security. Consider usedforsecurity=False",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "./professional_emergency_verifier.py",
+      "line_number": 381,
+      "issue_type": "B110",
+      "severity": "low",
+      "message": "Try, Except, Pass detected.",
+      "suggested_fix": null
+    },
+    {
+      "file_path": "./professional_port_manager.py",
+      "line_number": 14,
+      "issue_type": "B404",
+      "severity": "low",
+      "message": "Consider possible security implications associated with the subprocess module.",
+      "suggested_fix": null
+    }
+  ],
+  "fixes_applied": [],
+  "security_score": 100,
+  "performance_score": 90,
+  "maintainability_score": 0,
+  "recommendations": []
+}

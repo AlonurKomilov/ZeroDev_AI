@@ -2,8 +2,17 @@
 
 import { useEffect, useState } from "react";
 
+// Define PR data interface
+interface PrData {
+  title: string;
+  author: string;
+  filesChanged: number;
+  commits: number;
+  url: string;
+}
+
 // Mock data that would come from the GitHub API
-const mockPrData = {
+const mockPrData: PrData = {
   title: "feat: Migrate to FastAPI",
   author: "zerodev-bot",
   filesChanged: 15,
@@ -16,7 +25,7 @@ export default function UpgradeReviewPage({
 }: {
   params: { id: string; pr_id: string };
 }) {
-  const [prData, setPrData] = useState(null);
+  const [prData, setPrData] = useState<PrData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {

@@ -1,11 +1,12 @@
 import uuid
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
 from backend.core.database import get_session
 from backend.core.security import current_active_user
-from backend.models.user_model import User
 from backend.models.project_model import Project
+from backend.models.user_model import User
 from backend.schemas.project_schemas import ProjectCreate, ProjectRead, ProjectUpdate
 from backend.tasks.project_tasks import (
     create_project_files_task,
@@ -13,6 +14,7 @@ from backend.tasks.project_tasks import (
 )
 
 router = APIRouter()
+
 
 @router.post("/", response_model=ProjectRead, status_code=201)
 def create_project(
@@ -34,6 +36,7 @@ def create_project(
 
     return project
 
+
 @router.get("/", response_model=list[ProjectRead])
 def read_projects(
     *,
@@ -53,6 +56,7 @@ def read_projects(
     ).all()
     return projects
 
+
 @router.get("/{project_id}", response_model=ProjectRead)
 def read_project(
     *,
@@ -67,8 +71,11 @@ def read_project(
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
     if project.user_id != current_user.id:
-        raise HTTPException(status_code=403, detail="Not authorized to access this project")
+        raise HTTPException(
+            status_code=403, detail="Not authorized to access this project"
+        )
     return project
+
 
 @router.put("/{project_id}", response_model=ProjectRead)
 def update_project(
@@ -85,7 +92,9 @@ def update_project(
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
     if project.user_id != current_user.id:
-        raise HTTPException(status_code=403, detail="Not authorized to access this project")
+        raise HTTPException(
+            status_code=403, detail="Not authorized to access this project"
+        )
 
     project_data = project_in.dict(exclude_unset=True)
     for key, value in project_data.items():
@@ -95,6 +104,7 @@ def update_project(
     session.commit()
     session.refresh(project)
     return project
+
 
 @router.delete("/{project_id}", status_code=204)
 def delete_project(
@@ -110,7 +120,9 @@ def delete_project(
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
     if project.user_id != current_user.id:
-        raise HTTPException(status_code=403, detail="Not authorized to access this project")
+        raise HTTPException(
+            status_code=403, detail="Not authorized to access this project"
+        )
 
     # Dispatch background task to delete project files
     delete_project_files_task.delay(str(current_user.id), str(project.id))

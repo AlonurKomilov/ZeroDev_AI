@@ -1,10 +1,12 @@
-from cryptography.fernet import Fernet
 from backend.core.settings import settings
+from cryptography.fernet import Fernet
+
 
 class EncryptionService:
     """
     Handles encryption and decryption of data.
     """
+
     def __init__(self, key: str):
         self.fernet = Fernet(key.encode())
 
@@ -19,5 +21,6 @@ class EncryptionService:
         Decrypts a string.
         """
         return self.fernet.decrypt(encrypted_data.encode()).decode()
+
 
 encryption_service = EncryptionService(settings.ENCRYPTION_KEY)

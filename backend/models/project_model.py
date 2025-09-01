@@ -1,18 +1,20 @@
 from __future__ import annotations
-import uuid
-import datetime
-from typing import TYPE_CHECKING, Optional
 
-from sqlmodel import Field, Relationship, SQLModel
+import datetime
+import uuid
+from typing import TYPE_CHECKING
+
+from sqlmodel import Field, Relationship, SQLModel  # type: ignore
 
 if TYPE_CHECKING:
     from backend.models.user_model import User
 
 
-class Project(SQLModel, table=True):
+class Project(SQLModel, table=True):  # type: ignore
     """
     Represents a user's project.
     """
+
     __tablename__ = "projects"
 
     id: uuid.UUID = Field(

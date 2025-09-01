@@ -1,15 +1,16 @@
-import os
 import subprocess
 import time
-import requests
 from pathlib import Path
+
+import requests
+
 
 def deploy_project(
     project_path: str,
     project_name: str,
     port: int = 8000,
     push_to_registry: bool = False,
-    health_check: bool = True
+    health_check: bool = True,
 ):
     project_dir = Path(project_path)
     dockerfile = project_dir / "Dockerfile"
@@ -19,16 +20,18 @@ def deploy_project(
         raise FileNotFoundError("Dockerfile not found in project directory.")
 
     # 1. Old container ni tozalash
-    print(f"[🧹] Removing old container (if exists)...")
+    print("[🧹] Removing old container (if exists)...")
     subprocess.run(
         ["docker", "rm", "-f", project_name],
         stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL
+        stderr=subprocess.DEVNULL,
     )
 
     # 2. Docker image yaratish
     print(f"[🔧] Building Docker image: {image_tag}")
-    subprocess.run(["docker", "build", "-t", image_tag, "."], cwd=project_path, check=True)
+    subprocess.run(
+        ["docker", "build", "-t", image_tag, "."], cwd=project_path, check=True
+    )
 
     # 3. (ixtiyoriy) DockerHub’ga push
     if push_to_registry:
@@ -36,11 +39,7 @@ def deploy_project(
         subprocess.run(["docker", "push", image_tag], check=True)
 
     # 4. Run container
-    run_cmd = [
-        "docker", "run", "-d",
-        "-p", f"{port}:8000",
-        "--name", project_name
-    ]
+    run_cmd = ["docker", "run", "-d", "-p", f"{port}:8000", "--name", project_name]
 
     # .env mavjud bo‘lsa — uzatish
     env_file = project_dir / ".env"
@@ -65,4 +64,6 @@ def deploy_project(
         except Exception as e:
             print(f"[❌] No response from service: {e}")
 
-    print(f"[✅] Project '{project_name}' deployed successfully at http://localhost:{port}")
+    print(
+        f"[✅] Project '{project_name}' deployed successfully at http://localhost:{port}"
+    )

@@ -1,7 +1,8 @@
 import logging
 import sys
-from pythonjsonlogger import jsonlogger
+
 from backend.core.settings import settings
+from pythonjsonlogger import jsonlogger
 
 # 1. Get the root logger
 logger = logging.getLogger()
@@ -26,6 +27,7 @@ logHandler.setFormatter(formatter)
 if logger.hasHandlers():
     logger.handlers.clear()
 logger.addHandler(logHandler)
+
 
 def get_logger(name: str) -> logging.Logger:
     """

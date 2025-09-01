@@ -1,6 +1,7 @@
-from fastapi import APIRouter, HTTPException
-from pathlib import Path
 import json
+from pathlib import Path
+
+from fastapi import APIRouter, HTTPException
 
 from backend.core.logger import get_logger
 
@@ -9,6 +10,7 @@ log = get_logger(__name__)
 
 # Define the log path relative to the project root
 LOG_PATH = Path("backend/security_engine/feedback_log.json")
+
 
 @router.get("/admin/feedback_logs", tags=["Admin"])
 def get_feedback_logs():

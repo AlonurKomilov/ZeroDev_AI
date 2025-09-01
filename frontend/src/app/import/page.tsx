@@ -2,10 +2,18 @@
 
 import { useState } from "react";
 
+interface AnalysisResult {
+  techStack: string[];
+  architecture: {
+    models: number;
+    endpoints: number;
+  };
+}
+
 export default function ImportPage() {
   const [repoUrl, setRepoUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [analysis, setAnalysis] = useState(null);
+  const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
 
   const handleImport = async () => {
     if (!repoUrl) return;

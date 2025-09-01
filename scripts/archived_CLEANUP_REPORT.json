@@ -1,0 +1,34 @@
+{
+  "cache_removed": [
+    "/workspaces/ZeroDev_AI/backend/__pycache__",
+    "/workspaces/ZeroDev_AI/backend/agents/__pycache__",
+    "/workspaces/ZeroDev_AI/backend/services/__pycache__",
+    "/workspaces/ZeroDev_AI/backend/core/__pycache__",
+    "/workspaces/ZeroDev_AI/backend/tests/__pycache__",
+    "/workspaces/ZeroDev_AI/backend/api/__pycache__",
+    "/workspaces/ZeroDev_AI/backend/security_engine/__pycache__",
+    "/workspaces/ZeroDev_AI/backend/tests/unit/__pycache__",
+    "/workspaces/ZeroDev_AI/backend/.pytest_cache",
+    "/workspaces/ZeroDev_AI/frontend/node_modules"
+  ],
+  "duplicates_fixed": [
+    {
+      "files": [
+        "/workspaces/ZeroDev_AI/backend/docs/BACKEND_MODULES_SEQUENCE.md",
+        "/workspaces/ZeroDev_AI/backend/tasks/__init__.py",
+        "/workspaces/ZeroDev_AI/backend/api/__init__.py",
+        "/workspaces/ZeroDev_AI/frontend/src/app/(auth)/signup/page.tsx"
+      ],
+      "action": "manual_review_required"
+    },
+    {
+      "files": [
+        "/workspaces/ZeroDev_AI/frontend/jules-scratch/verification/initial_page.png",
+        "/workspaces/ZeroDev_AI/frontend/jules-scratch/verification/error.png"
+      ],
+      "action": "manual_review_required"
+    }
+  ],
+  "files_renamed": [],
+  "space_saved_mb": 587.7600000000001
+}

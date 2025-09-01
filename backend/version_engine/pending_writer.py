@@ -1,13 +1,15 @@
 import json
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 PENDING_DIR = Path("version_engine/pending")
 PENDING_DIR.mkdir(parents=True, exist_ok=True)
 
+
 def get_pending_file_path(file: str, version: str) -> Path:
     file_id = file.replace("/", "__")
     return PENDING_DIR / f"{file_id}__{version}.json"
+
 
 def save_pending_version(payload: Dict):
     """
@@ -21,6 +23,7 @@ def save_pending_version(payload: Dict):
         json.dump(payload, f, indent=2)
     print(f"[📥] Pending version stored: {path.name}")
 
+
 def load_all_pending() -> List[Dict]:
     """
     Loads all pending version requests.
@@ -31,6 +34,7 @@ def load_all_pending() -> List[Dict]:
             data = json.load(f)
             entries.append(data)
     return entries
+
 
 def delete_pending_version(file: str, version: str):
     """

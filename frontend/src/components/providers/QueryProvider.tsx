@@ -1,41 +1,43 @@
 "use client";
 
-import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
-import { useToast } from "@/contexts/ToastContext";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useState, ReactNode } from "react";
 
-const GlobalErrorHandler = () => {
-  const queryClient = useQueryClient();
-  const { addToast } = useToast();
+interface QueryProviderProps {
+  children: ReactNode;
+}
 
-  useEffect(() => {
-    queryClient.setDefaultOptions({
-      queries: {
-        onError: (error: any) => {
-          addToast(error.message || "An unexpected error occurred", "error");
+export default function QueryProvider({ children }: QueryProviderProps) {
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 5 * 60 * 1000, // 5 minutes
+            retry: (failureCount, error: any) => {
+              // Don't retry on 4xx errors
+              if (error?.status >= 400 && error?.status < 500) {
+                return false;
+              }
+              // Retry up to 3 times for other errors
+              return failureCount < 3;
+            },
+          },
+          mutations: {
+            retry: (failureCount, error: any) => {
+              // Don't retry on 4xx errors
+              if (error?.status >= 400 && error?.status < 500) {
+                return false;
+              }
+              return failureCount < 2;
+            },
+          },
         },
-      },
-      mutations: {
-        onError: (error: any) => {
-          addToast(error.message || "An unexpected error occurred", "error");
-        },
-      },
-    });
-  }, [queryClient, addToast]);
-
-  return null;
-};
-
-export default function QueryProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const [queryClient] = useState(() => new QueryClient());
+      })
+  );
 
   return (
     <QueryClientProvider client={queryClient}>
-      <GlobalErrorHandler />
       {children}
     </QueryClientProvider>
   );

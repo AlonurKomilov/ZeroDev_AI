@@ -1,0 +1,24 @@
+{
+  "timestamp": "2025-09-01T11:00:48.036625",
+  "total_files": 12,
+  "total_size": 2651383,
+  "file_types": {
+    "code": {
+      "count": 7,
+      "size": 59595
+    },
+    "config": {
+      "count": 5,
+      "size": 2591788
+    }
+  },
+  "exact_duplicates": [],
+  "content_duplicates": [],
+  "similar_files": [],
+  "recommendations": [],
+  "potential_savings": {
+    "exact_duplicates_bytes": 0,
+    "content_duplicates_bytes": 0,
+    "total_bytes": 0
+  }
+}

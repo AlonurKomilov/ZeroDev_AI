@@ -7,32 +7,48 @@ and sets up middleware.
 from __future__ import annotations
 
 from fastapi import FastAPI
+from prometheus_client import Counter
 from pydantic import BaseModel, Field
-
-# ✅ Import core services
-from backend.core.logger import get_logger
-from backend.core.celery_app import celery_app
-from backend.tasks.parsing import parse_prompt_task
-
-# ✅ Import API routers from the new `api` directory
-from backend.api import analyze, suggest, feedback, admin_feedback, auth, projects, keys, templates, export, modify_api, review_api, emergency, dashboard, migration, upgrade
 
 # ✅ Import Prometheus monitoring components
 from starlette_exporter import PrometheusMiddleware, handle_metrics
-from prometheus_client import Counter
+
+# ✅ Import API routers from the new `api` directory
+from backend.api import (
+    admin_feedback,
+    analyze,
+    auth,
+    dashboard,
+    emergency,
+    export,
+    feedback,
+    keys,
+    migration,
+    modify_api,
+    projects,
+    review_api,
+    suggest,
+    templates,
+    upgrade,
+)
+from backend.core.celery_app import celery_app
+
+# ✅ Import core services
+from backend.core.logger import get_logger
+
+# ✅ Import middleware
+from backend.core.middleware import GlobalStatusMiddleware
+from backend.tasks.parsing import parse_prompt_task
 
 # ✅ Initialize logger
 # This should be one of the first things to run
 log = get_logger(__name__)
 
-# ✅ Import middleware
-from backend.core.middleware import GlobalStatusMiddleware
-
 # ✅ Create FastAPI app
 app = FastAPI(
     title="ZeroDev Backend API",
     version="2.0.0",
-    description="The core API for the ZeroDev platform, built for stability and performance."
+    description="The core API for the ZeroDev platform, built for stability and performance.",
 )
 
 # ✅ Add global status middleware
@@ -45,21 +61,27 @@ app.add_middleware(PrometheusMiddleware)
 CELERY_TASKS_TOTAL = Counter(
     "zerodev_celery_tasks_total",
     "Total number of Celery tasks dispatched.",
-    ["task_name"]
+    ["task_name"],
 )
 
 # ✅ Add metrics endpoint
 app.add_route("/metrics", handle_metrics)
 
+
 # ✅ Pydantic Models for the /parse endpoint
 class PromptRequest(BaseModel):
     prompt: str = Field(..., example="Build me a Telegram bot that echoes messages.")
-    model_name: str = Field("gpt-4o-mini", description="The name of the model to use for parsing.")
+    model_name: str = Field(
+        "gpt-4o-mini", description="The name of the model to use for parsing."
+    )
+
 
 class TaskResponse(BaseModel):
     task_id: str
 
+
 # Note: ProjectSpec is defined in models/spec_model.py, but the /parse endpoint no longer returns it directly.
+
 
 @app.post("/parse", response_model=TaskResponse, status_code=202, tags=["Core"])
 async def parse_prompt(req: PromptRequest) -> TaskResponse:
@@ -67,7 +89,9 @@ async def parse_prompt(req: PromptRequest) -> TaskResponse:
     Accepts a prompt and dispatches it to a Celery worker for processing.
     Returns a task ID for the client to poll.
     """
-    log.info(f"Dispatching prompt to Celery task for model {req.model_name}: {req.prompt[:50]}...")
+    log.info(
+        f"Dispatching prompt to Celery task for model {req.model_name}: {req.prompt[:50]}..."
+    )
     task = parse_prompt_task.delay(prompt=req.prompt, model_name=req.model_name)
     CELERY_TASKS_TOTAL.labels(task_name=parse_prompt_task.name).inc()
     log.info(f"Task {task.id} created for prompt using model {req.model_name}.")
@@ -115,6 +139,9 @@ app.include_router(emergency.router, prefix="/api/emergency", tags=["Emergency"]
 app.include_router(dashboard.router, prefix="/api/dashboard", tags=["Dashboard"])
 app.include_router(migration.router, prefix="/api/migration", tags=["Migration"])
 app.include_router(upgrade.router, prefix="/api", tags=["Upgrade"])
+# WebSocket integration temporarily disabled
+# app.include_router(websocket.router, tags=["WebSocket"])
+
 
 @app.get("/", tags=["Health"])
 def read_root():

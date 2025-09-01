@@ -2,12 +2,16 @@
 This module contains the agents responsible for the transformation tasks,
 starting with the ForeignCodeScannerAgent.
 """
-import os
+
 import ast
 import json
+import os
 
 from backend.core.logger import get_logger
-from backend.transformation.orchestration import transformation_orchestrator, TransformationState
+from backend.transformation.orchestration import (
+    TransformationState,
+    transformation_orchestrator,
+)
 
 log = get_logger(__name__)
 
@@ -16,6 +20,7 @@ class CodeVisitor(ast.NodeVisitor):
     """
     An AST visitor that extracts information about classes, functions, and imports.
     """
+
     def __init__(self):
         self.imports = []
         self.functions = []
@@ -32,19 +37,25 @@ class CodeVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
     def visit_FunctionDef(self, node):
-        self.functions.append({
-            "name": node.name,
-            "args": [arg.arg for arg in node.args.args],
-            "lineno": node.lineno
-        })
+        self.functions.append(
+            {
+                "name": node.name,
+                "args": [arg.arg for arg in node.args.args],
+                "lineno": node.lineno,
+            }
+        )
         self.generic_visit(node)
 
     def visit_ClassDef(self, node):
-        self.classes.append({
-            "name": node.name,
-            "methods": [n.name for n in node.body if isinstance(n, ast.FunctionDef)],
-            "lineno": node.lineno
-        })
+        self.classes.append(
+            {
+                "name": node.name,
+                "methods": [
+                    n.name for n in node.body if isinstance(n, ast.FunctionDef)
+                ],
+                "lineno": node.lineno,
+            }
+        )
         self.generic_visit(node)
 
 
@@ -83,18 +94,21 @@ def foreign_code_scanner_agent(job_id: str):
                         }
                 except Exception as e:
                     log.warning(f"Could not parse AST for {file_path}: {e}")
-                    architecture_map[relative_path] = {"error": f"Could not parse file: {e}"}
+                    architecture_map[relative_path] = {
+                        "error": f"Could not parse file: {e}"
+                    }
 
     log.info(f"Finished scanning. Found {len(architecture_map)} Python files.")
 
     # Update the job state with the architecture map
     transformation_orchestrator.update_job_state(
         job_id,
-        TransformationState.REFACTORING, # Set state for the next step
-        {"architecture_map": json.dumps(architecture_map, indent=2)}
+        TransformationState.REFACTORING,  # Set state for the next step
+        {"architecture_map": json.dumps(architecture_map, indent=2)},
     )
 
     # Trigger the next task in the workflow
     from backend.transformation.tasks import refactor_task
+
     refactor_task.delay(job_id)
     log.info(f"Dispatched refactor_task for job {job_id}.")

@@ -1,10 +1,12 @@
 import asyncio
-from backend.core.celery_app import celery_app
-from backend.core.orchestration_service import orchestration_service, ModificationState
-from backend.agents.context_builder_agent import context_builder_agent
+
 from backend.agents.code_patcher_agent import code_patcher_agent
+from backend.agents.context_builder_agent import context_builder_agent
 from backend.agents.review_agent import review_agent
+from backend.core.celery_app import celery_app
+from backend.core.orchestration_service import ModificationState, orchestration_service
 from backend.services.prompt_enrichment_service import prompt_enrichment_service
+
 
 @celery_app.task
 def build_context_task(job_id: str):
@@ -27,9 +29,7 @@ def build_context_task(job_id: str):
         error_message = f"Missing essential data in job details: {e}"
         print(f"Error for job_id {job_id}: {error_message}")
         orchestration_service.update_job_state(
-            job_id,
-            ModificationState.ERROR,
-            {"error_message": error_message}
+            job_id, ModificationState.ERROR, {"error_message": error_message}
         )
         return
 
@@ -37,20 +37,18 @@ def build_context_task(job_id: str):
 
     if "error" in context:
         orchestration_service.update_job_state(
-            job_id,
-            ModificationState.ERROR,
-            {"error_message": context["error"]}
+            job_id, ModificationState.ERROR, {"error_message": context["error"]}
         )
         return
 
     orchestration_service.update_job_state(
-        job_id,
-        ModificationState.CODE_PATCHING,
-        {"context": context}
+        job_id, ModificationState.CODE_PATCHING, {"context": context}
     )
 
     generate_patch_task.delay(job_id)
-    print(f"Successfully built context for job_id: {job_id}. Transitioning to CODE_PATCHING.")
+    print(
+        f"Successfully built context for job_id: {job_id}. Transitioning to CODE_PATCHING."
+    )
 
 
 @celery_app.task
@@ -72,7 +70,9 @@ def generate_patch_task(job_id: str):
     except KeyError as e:
         error_message = f"Missing essential data in job details: {e}"
         print(f"Error for job_id {job_id}: {error_message}")
-        orchestration_service.update_job_state(job_id, ModificationState.ERROR, {"error_message": error_message})
+        orchestration_service.update_job_state(
+            job_id, ModificationState.ERROR, {"error_message": error_message}
+        )
         return
 
     enriched_prompt = prompt_enrichment_service.enrich_prompt(prompt)
@@ -80,17 +80,19 @@ def generate_patch_task(job_id: str):
     patch = asyncio.run(code_patcher_agent.generate_patch(enriched_prompt, context))
 
     if patch.startswith("Error:"):
-        orchestration_service.update_job_state(job_id, ModificationState.ERROR, {"error_message": patch})
+        orchestration_service.update_job_state(
+            job_id, ModificationState.ERROR, {"error_message": patch}
+        )
         return
 
     orchestration_service.update_job_state(
-        job_id,
-        ModificationState.REVIEWING,
-        {"diff_patch": patch}
+        job_id, ModificationState.REVIEWING, {"diff_patch": patch}
     )
 
     review_patch_task.delay(job_id)
-    print(f"Successfully generated patch for job_id: {job_id}. Transitioning to REVIEWING.")
+    print(
+        f"Successfully generated patch for job_id: {job_id}. Transitioning to REVIEWING."
+    )
 
 
 @celery_app.task
@@ -112,7 +114,9 @@ def review_patch_task(job_id: str):
     except KeyError as e:
         error_message = f"Missing essential data in job details: {e}"
         print(f"Error for job_id {job_id}: {error_message}")
-        orchestration_service.update_job_state(job_id, ModificationState.ERROR, {"error_message": error_message})
+        orchestration_service.update_job_state(
+            job_id, ModificationState.ERROR, {"error_message": error_message}
+        )
         return
 
     review = review_agent.review_patch(user_id, project_id, diff_patch)
@@ -121,15 +125,15 @@ def review_patch_task(job_id: str):
         orchestration_service.update_job_state(
             job_id,
             ModificationState.ERROR,
-            {"error_message": f"Review failed: {review.get('error')}"}
+            {"error_message": f"Review failed: {review.get('error')}"},
         )
         return
 
     orchestration_service.update_job_state(
-        job_id,
-        ModificationState.AWAITING_APPROVAL,
-        {"review_feedback": review}
+        job_id, ModificationState.AWAITING_APPROVAL, {"review_feedback": review}
     )
 
-    print(f"Successfully reviewed patch for job_id: {job_id}. Transitioning to AWAITING_APPROVAL.")
+    print(
+        f"Successfully reviewed patch for job_id: {job_id}. Transitioning to AWAITING_APPROVAL."
+    )
     return {"status": "patch reviewed", "job_id": job_id}

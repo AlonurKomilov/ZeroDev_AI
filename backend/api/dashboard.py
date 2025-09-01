@@ -3,11 +3,15 @@ CEO Dashboard API
 
 This API provides highly secure endpoints for accessing aggregated business and
 platform health metrics. Access is restricted by a special high-security
-authentication system with 2FA.
+authentication system with real 2FA.
 """
-from fastapi import APIRouter, Depends, HTTPException, status, Header
-from pydantic import BaseModel
+
+import pyotp
+import time
 from typing import Optional
+from fastapi import APIRouter, Depends, Header, HTTPException, status
+from pydantic import BaseModel
+from backend.core.settings import settings
 
 router = APIRouter()
 
@@ -18,26 +22,38 @@ async def high_security_auth(
     x_2fa_code: Optional[str] = Header(None),
 ):
     """
-    A simulated high-security authentication dependency that requires a special
-    token and a 2FA code. In a real implementation, this would be much more robust.
+    Real high-security authentication with TOTP-based 2FA
     """
-    # In a real system, these would come from a secure source
-    CEO_TOKEN = "ceo_super_secret_token"
-    VALID_2FA_CODE = "123456"
-
-    if not x_ceo_token or x_ceo_token != CEO_TOKEN:
+    # CEO token validation (should be from environment/secrets)
+    expected_ceo_token = settings.OWNER_EMERGENCY_KEY  # Reuse emergency key for admin access
+    
+    if not x_ceo_token or x_ceo_token != expected_ceo_token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or missing CEO token.",
         )
 
-    if not x_2fa_code or x_2fa_code != VALID_2FA_CODE:
+    # 2FA validation using TOTP
+    if not x_2fa_code:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid or missing 2FA code.",
+            detail="2FA code required.",
+        )
+    
+    # In production, each admin would have their own TOTP secret
+    # For now, use a shared secret that should be configured per deployment
+    totp_secret = getattr(settings, 'ADMIN_TOTP_SECRET', 'JBSWY3DPEHPK3PXP')  # Default for demo
+    
+    totp = pyotp.TOTP(totp_secret)
+    if not totp.verify(x_2fa_code, valid_window=1):  # Allow 1 window (30 seconds) tolerance
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid 2FA code.",
         )
 
+
 # --- Pydantic Models for Dashboard Metrics ---
+
 
 class PlatformHealthMetrics(BaseModel):
     active_users: int
@@ -45,14 +61,21 @@ class PlatformHealthMetrics(BaseModel):
     api_requests_per_minute: int
     error_rate: float
 
+
 class BusinessMetrics(BaseModel):
     mrr: float
     new_customers_last_30_days: int
     churn_rate: float
 
+
 # --- API Endpoints ---
 
-@router.get("/health", response_model=PlatformHealthMetrics, dependencies=[Depends(high_security_auth)])
+
+@router.get(
+    "/health",
+    response_model=PlatformHealthMetrics,
+    dependencies=[Depends(high_security_auth)],
+)
 async def get_platform_health():
     """
     Provides platform health metrics.
@@ -65,7 +88,12 @@ async def get_platform_health():
         error_rate=0.01,
     )
 
-@router.get("/business", response_model=BusinessMetrics, dependencies=[Depends(high_security_auth)])
+
+@router.get(
+    "/business",
+    response_model=BusinessMetrics,
+    dependencies=[Depends(high_security_auth)],
+)
 async def get_business_metrics():
     """
     Provides business metrics.

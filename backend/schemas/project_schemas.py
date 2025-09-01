@@ -1,12 +1,16 @@
-import uuid
 import datetime
+import uuid
+
 from pydantic import BaseModel
+
 
 class ProjectBase(BaseModel):
     name: str
 
+
 class ProjectCreate(ProjectBase):
     pass
+
 
 class ProjectRead(ProjectBase):
     id: uuid.UUID
@@ -16,6 +20,7 @@ class ProjectRead(ProjectBase):
 
     class Config:
         from_attributes = True
+
 
 class ProjectUpdate(ProjectBase):
     pass
