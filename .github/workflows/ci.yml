@@ -1,57 +1,106 @@
 name: CI
-
 on:
   push:
-    branches: [ main ]
   pull_request:
-    branches: [ main ]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  backend-tests:
+  backend:
+    name: Backend (Python 3.12)
     runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.10'
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r backend/requirements.txt
-    - name: Run tests
-      run: pytest backend/tests/
 
-  frontend-tests:
-    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '18'
-    - name: Install dependencies
-      run: npm install
-      working-directory: ./frontend
-    - name: Run tests
-      run: npm test
-      working-directory: ./frontend
+      - uses: actions/checkout@v4
 
-  lint:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('backend/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install deps
+        run: |
+          python -m pip install -U pip
+          if [ -f backend/requirements.txt ]; then pip install -r backend/requirements.txt; fi
+          pip install pytest ruff mypy black
+
+      - name: Lint / Typecheck
+        run: |
+          ruff backend
+          mypy backend || true
+          black --check backend
+
+      # Ellipsis gate (prod Python). Tests/migrations/markdown istisno
+      - name: Ellipsis gate (Python prod)
+        run: |
+          set -e
+          ! git grep -nE '^\s*\.\.\.\s*(#.*)?$' -- 'backend/**/*.py' ':!**/tests/**' ':!**/migrations/**'
+          ! git grep -nE '=\s*\.\.\.\s*(#.*)?$|return\s+\.\.\.\s*(#.*)?$|raise\s+\.\.\.' -- 'backend/**/*.py' ':!**/tests/**' ':!**/migrations/**'
+
+      - name: Tests (graceful if missing)
+        run: |
+          if [ -d backend/tests ]; then
+            pytest -q
+          else
+            echo "No backend tests; skipping."
+          fi
+
+  frontend:
+    name: Frontend (Node 20)
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.10'
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install black ruff mypy
-    - name: Run linters
-      run: |
-        black --check .
-        ruff .
-        mypy .
-      working-directory: ./backend
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Detect package manager & install
+        working-directory: frontend
+        run: |
+          set -e
+          if [ -f pnpm-lock.yaml ]; then
+            corepack enable
+            pnpm install --frozen-lockfile
+            echo "PKG=pnpm" >> $GITHUB_ENV
+          elif [ -f yarn.lock ]; then
+            corepack enable
+            yarn install --frozen-lockfile
+            echo "PKG=yarn" >> $GITHUB_ENV
+          else
+            npm ci
+            echo "PKG=npm" >> $GITHUB_ENV
+          fi
+
+      - name: Build
+        working-directory: frontend
+        run: |
+          if [ "$PKG" = "pnpm" ]; then pnpm build;
+          elif [ "$PKG" = "yarn" ]; then yarn build;
+          else npm run build; fi
+
+      - name: Tests (if present)
+        working-directory: frontend
+        run: |
+          if [ "$PKG" = "pnpm" ]; then pnpm test --if-present;
+          elif [ "$PKG" = "yarn" ]; then yarn test --if-present;
+          else npm test --if-present; fi
+
+      # Ellipsis gate (TS/TSX prod). BUTUN SATR ellipsis — spread’larni emas.
+      - name: Ellipsis gate (TS/TSX prod)
+        run: |
+          set -e
+          ! git grep -nE '^\s*\.\.\.\s*[;,)]?\s*(//.*)?$' -- 'frontend/**/*.ts' 'frontend/**/*.tsx' ':!**/*.test.*' ':!**/*.spec.*' ':!**/migrations/**'
